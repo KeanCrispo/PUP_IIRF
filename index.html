@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PUP_IIRF - Individual Inventory Record Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather:700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+  body {
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Merriweather', serif;
+    background: url('PUP MULANAY.jpg') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    /* Animated maroon and gold gradient overlay */
+    background: linear-gradient(120deg, rgba(255,215,0,0.2), rgba(128,0,0,0.290), rgba(255,215,0,0.35), rgba(128,0,0,0.35));
+    background-size: 300% 300%;
+    animation: gradientMove 8s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  main, .main-card {
+    position: relative;
+    z-index: 1;
+  }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo-circle">
+      <img src="PUP.png" alt="PUP Logo" class="logo left-logo">
+    </div>
+    <div class="header-content">
+      <h1>INDIVIDUAL INVENTORY RECORD FORM</h1>
+      <div class="gold-line"></div>
+    </div>
+  </header>
+  <!-- Place this after your <header class="main-header"> ... </header> -->
+  <nav class="main-menu">
+  <ul>
+    <li><a href="login.html">ADMIN</a></li>
+    <li><a href="update.html">UPDATE</a></li>
+    <li><a href="help.html">HELP</a></li>
+  </ul>
+</nav>
+  <main>
+    <section class="main-card">
+      <!-- Formal content goes here -->
+      <p class="intro-text">
+        Welcome to the Polytechnic University of the Philippines Individual Inventory Record Form. Please fill out the required information accurately and completely.
+      </p>
+      <form class="iirf-form">
+        <h2>I. Personal Information</h2>
+        <div class="form-row">
+          <label>Name:</label>
+          <input type="text" name="surname" placeholder="Surname" required>
+          <input type="text" name="first_name" placeholder="First Name" required>
+          <input type="text" name="middle_name" placeholder="Middle Name">
+        </div>
+        <div class="form-row">
+          <label>Gender:</label>
+          <select required>
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+          <label>Age:</label>
+          <input type="number" name="age">
+          <label>Civil Status:</label>
+          <input type="text" name="civil_status">
+        </div>
+        <div class="form-row">
+          <label>Course, Year and Section:</label>
+          <input type="text" style="width:300px;">
+        </div>
+        <div class="form-row">
+          <label>Height (m):</label>
+          <input type="text" style="width:80px;">
+          <label>Weight:</label>
+          <input type="text" style="width:80px;">
+          <label>Complexion:</label>
+          <input type="text" style="width:120px;">
+        </div>
+        <div class="form-row">
+          <label>Date of Birth:</label>
+          <input type="date">
+          <label>Place of Birth:</label>
+          <input type="text">
+        </div>
+        <div class="form-row">
+          <label>City Address:</label>
+          <input type="text" name="city_address" style="width:300px;">
+        </div>
+        <div class="form-row">
+          <label>Provincial Address:</label>
+          <input type="text" style="width:300px;">
+        </div>
+        <div class="form-row">
+          <label>Email Address:</label>
+          <input type="email" name="email">
+          <label>Telephone No.:</label>
+          <input type="text">
+          <label>Mobile No.:</label>
+          <input type="text">
+        </div>
+        <div class="form-row">
+          <label>High School General Average:</label>
+          <input type="text" style="width:120px;">
+          <label>Religion:</label>
+          <input type="text" name="religion" style="width:120px;">
+        </div>
+        <div class="form-row">
+          <label>If working, employer name/address:</label>
+          <input type="text" style="width:300px;">
+        </div>
+        <div class="form-row">
+          <label>Person to contact in case of emergency:</label>
+          <input type="text" placeholder="Name">
+          <input type="text" placeholder="Relationship">
+          <input type="text" placeholder="Contact Number">
+        </div>
+
+        <h2>II. Educational Background</h2>
+        <table class="edu-table">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>School Graduated</th>
+              <th>School Address</th>
+              <th>Public/Private</th>
+              <th>Dates of Attendance</th>
+              <th>Honors/Special Awards</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pre-elementary</td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+            </tr>
+            <tr>
+              <td>Elementary</td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+            </tr>
+            <tr>
+              <td>High School</td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+            </tr>
+            <tr>
+              <td>Vocational</td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+            </tr>
+            <tr>
+              <td>College (if any)</td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+              <td><input type="text"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="form-row">
+          <label>Nature of Schooling:</label>
+          <label><input type="checkbox"> Continuous</label>
+          <label><input type="checkbox"> Interrupted</label>
+          <input type="text" placeholder="If interrupted, why?">
+        </div>
+
+        <h2>III. Home and Family Background</h2>
+        <div class="form-row">
+          <label>Name of Father:</label>
+          <input type="text" name="father_name">
+          <label>Age:</label>
+          <input type="number" name="father_age">
+          <label><input type="checkbox" name="father_living"> Living</label>
+          <label><input type="checkbox" name="father_deceased"> Deceased</label>
+        </div>
+        <div class="form-row">
+          <label>Educational Attainment:</label>
+          <input type="text">
+          <label>Occupation:</label>
+          <input type="text" name="father_occupation">
+          <label>Name of Employer:</label>
+          <input type="text">
+          <label>Address of Employer:</label>
+          <input type="text">
+        </div>
+        <div class="form-row">
+          <label>Name of Mother:</label>
+          <input type="text" name="mother_name">
+          <label>Age:</label>
+          <input type="number" name="mother_age" min="0" style="width:80px;">
+          <label><input type="checkbox"> Living</label>
+          <label><input type="checkbox"> Deceased</label>
+        </div>
+        <div class="form-row">
+          <label>Educational Attainment:</label>
+          <input type="text">
+          <label>Occupation:</label>
+          <input type="text" name="mother_occupation">
+          <label>Name of Employer:</label>
+          <input type="text">
+          <label>Address of Employer:</label>
+          <input type="text">
+        </div>
+        <div class="form-row">
+          <label>Name of Guardian:</label>
+          <input type="text" name="guardian_name">
+          <label>Age:</label>
+          <input type="number" name="guardian_age" min="0" style="width:80px;">
+          <label>Relation:</label>
+          <input type="text">
+        </div>
+        <div class="form-row">
+          <label>Educational Attainment:</label>
+          <input type="text">
+          <label>Occupation:</label>
+          <input type="text" name="guardian_occupation">
+          <label>Name of Employer:</label>
+          <input type="text">
+          <label>Address of Employer:</label>
+          <input type="text">
+        </div>
+        <div class="form-row">
+          <label>Parents' Marital Relationship:</label>
+          <label><input type="checkbox"> Married and staying together</label>
+          <label><input type="checkbox"> Not Married but Living Together</label>
+          <label><input type="checkbox"> Single Parent</label>
+          <label><input type="checkbox"> Married but Separated</label>
+          <label><input type="checkbox"> Other (specify):</label>
+          <input type="text">
+        </div>
+        <div class="form-row">
+          <label>Number of children in the family (including yourself):</label>
+          <input type="number" min="0" style="width:80px;">
+          <label>Number of Brother/s:</label>
+          <input type="number" min="0" style="width:80px;">
+          <label>Number of Sister/s:</label>
+          <input type="number" min="0" style="width:80px;">
+        </div>
+        <div class="form-row">
+          <label>Number of brother/s or sister/s gainfully employed?</label>
+          <input type="number" min="0" style="width:80px;">
+          <label>Ordinal Position (e.g. 1st child, 2nd child):</label>
+          <input type="text" name="ordinal_position">
+        </div>
+        <div class="form-row">
+          <label>Is your brother/sister who is gainfully employed providing support to your:</label>
+          <label><input type="checkbox"> Family</label>
+          <label><input type="checkbox"> Your studies</label>
+          <label><input type="checkbox"> His/her own family</label>
+        </div>
+        <div class="form-row">
+          <label>Who finances your schooling?</label>
+          <label><input type="checkbox"> Parents</label>
+          <label><input type="checkbox"> Spouse</label>
+          <label><input type="checkbox"> Relatives</label>
+          <label><input type="checkbox"> Brother/Sister</label>
+          <label><input type="checkbox"> Scholarship</label>
+          <label><input type="checkbox"> Self-supporting/working student</label>
+        </div>
+
+        <!-- Place this before <h2>IV. Health</h2> -->
+        <div class="form-row">
+          <label>How much is your weekly allowance? (please specify the amount)</label>
+          <input type="text" name="weekly_allowance" placeholder="Amount">
+        </div>
+        <div class="form-row">
+          <label>Parents' Total Monthly Income:</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="income" value="Below Php5,000"> Below Php5,000</label>
+            <label><input type="checkbox" name="income" value="Php 5,001-Php 10,000"> Php 5,001-Php 10,000</label>
+            <label><input type="checkbox" name="income" value="Php 10,001-Php 15,000"> Php 10,001-Php 15,000</label>
+            <label><input type="checkbox" name="income" value="Php 15,001-Php 20,000"> Php 15,001-Php 20,000</label>
+            <label><input type="checkbox" name="income" value="Php 20,001-Php 25,000"> Php 20,001-Php 25,000</label>
+            <label><input type="checkbox" name="income" value="Php 25,001-Php 30,000"> Php 25,001-Php 30,000</label>
+            <label><input type="checkbox" name="income" value="Php 30,001-Php 35,000"> Php 30,001-Php 35,000</label>
+            <label><input type="checkbox" name="income" value="Php 35,001-Php 40,000"> Php 35,001-Php 40,000</label>
+            <label><input type="checkbox" name="income" value="Php 40,001-Php 45,000"> Php 40,001-Php 45,000</label>
+            <label><input type="checkbox" name="income" value="Php 45,001-Php 50,000"> Php 45,001-Php 50,000</label>
+            <label><input type="checkbox" name="income" value="Above Php 50,000"> Above Php 50,000</label>
+            <label><input type="checkbox" name="income" value="Others"> Others, please specify</label>
+            <input type="text" name="income_others" placeholder="Specify">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Do you have a quiet place to study?</label>
+          <label><input type="checkbox" name="quiet_place" value="Yes"> Yes</label>
+          <label><input type="checkbox" name="quiet_place" value="No"> No</label>
+        </div>
+        <div class="form-row">
+          <label>Do you share your room with anyone?</label>
+          <label><input type="checkbox" name="share_room" value="Yes"> Yes</label>
+          <label><input type="checkbox" name="share_room" value="No"> No</label>
+          <input type="text" name="share_room_with" placeholder="If yes, with whom?">
+        </div>
+        <div class="form-row">
+          <label>Nature of Residence while attending school:</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="residence" value="family_home"> family home</label>
+            <label><input type="checkbox" name="residence" value="bed_spacer"> bed spacer</label>
+            <label><input type="checkbox" name="residence" value="house_married_brother_sister"> house of married brother/sister</label>
+            <label><input type="checkbox" name="residence" value="relative_house"> relative's house</label>
+            <label><input type="checkbox" name="residence" value="rented_apartment"> rented apartment</label>
+            <label><input type="checkbox" name="residence" value="dorm"> dorm (including board & lodging)</label>
+            <label><input type="checkbox" name="residence" value="shares_apartment"> shares apartment with friends/relatives</label>
+          </div>
+        </div>
+
+        <h2>IV. HEALTH</h2>
+
+        <strong>A. Physical</strong>
+        <div class="form-row">
+          <label>Do you have problems with:</label>
+        </div>
+        <div class="form-row">
+          <label>Your Vision:</label>
+          <label><input type="checkbox" name="vision_yes"> Yes</label>
+          <label><input type="checkbox" name="vision_no"> No</label>
+          <input type="text" name="vision_specify" placeholder="If Yes, please specify">
+        </div>
+        <div class="form-row">
+          <label>Your Hearing:</label>
+          <label><input type="checkbox" name="hearing_yes"> Yes</label>
+          <label><input type="checkbox" name="hearing_no"> No</label>
+          <input type="text" name="hearing_specify" placeholder="If Yes, please specify">
+        </div>
+        <div class="form-row">
+          <label>Your Speech:</label>
+          <label><input type="checkbox" name="speech_yes"> Yes</label>
+          <label><input type="checkbox" name="speech_no"> No</label>
+          <input type="text" name="speech_specify" placeholder="If Yes, please specify">
+        </div>
+        <div class="form-row">
+          <label>Your General Health:</label>
+          <label><input type="checkbox" name="general_health_yes"> Yes</label>
+          <label><input type="checkbox" name="general_health_no"> No</label>
+          <input type="text" name="general_health_specify" placeholder="If Yes, please specify">
+        </div>
+
+        <strong>B. Psychological</strong>
+        <div class="form-row">
+          <label>Previous Consultations:</label>
+        </div>
+        <table class="edu-table">
+          <thead>
+            <tr>
+              <th>CONSULTED</th>
+              <th>YES</th>
+              <th>NO</th>
+              <th>WHEN</th>
+              <th>FOR WHAT?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Psychiatrist</td>
+              <td><input type="checkbox" name="psychiatrist_yes"></td>
+              <td><input type="checkbox" name="psychiatrist_no"></td>
+              <td><input type="text" name="psychiatrist_when"></td>
+              <td><input type="text" name="psychiatrist_for_what"></td>
+            </tr>
+            <tr>
+              <td>Psychologist</td>
+              <td><input type="checkbox" name="psychologist_yes"></td>
+              <td><input type="checkbox" name="psychologist_no"></td>
+              <td><input type="text" name="psychologist_when"></td>
+              <td><input type="text" name="psychologist_for_what"></td>
+            </tr>
+            <tr>
+              <td>Counselor</td>
+              <td><input type="checkbox" name="counselor_yes"></td>
+              <td><input type="checkbox" name="counselor_no"></td>
+              <td><input type="text" name="counselor_when"></td>
+              <td><input type="text" name="counselor_for_what"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>V. Interests and Hobbies</h2>
+        <div class="form-row">
+          <label>A. Academic</label>
+        </div>
+        <div class="form-row">
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="math_club"> Math Club</label>
+            <label><input type="checkbox" name="science_club"> Science Club</label>
+            <label><input type="checkbox" name="debating_club"> Debating Club</label>
+            <label><input type="checkbox" name="quizzers_club"> Quizzer's Club</label>
+            <label><input type="checkbox" name="academic_others"> Others, please specify</label>
+            <input type="text" name="academic_others_specify">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>What is/are your favorite subject/s?</label>
+          <input type="text" name="favorite_subjects">
+        </div>
+        <div class="form-row">
+          <label>What is/are the subject/s you like least?</label>
+          <input type="text" name="least_subjects">
+        </div>
+        <div class="form-row">
+          <label>B. Extra-Curricular</label>
+        </div>
+        <div class="form-row">
+          <label>What are your hobbies? (Write them in order of your preferences)</label>
+        </div>
+        <div class="form-row">
+          <input type="text" name="hobby1" placeholder="1.">
+          <input type="text" name="hobby2" placeholder="2.">
+          <input type="text" name="hobby3" placeholder="3.">
+          <input type="text" name="hobby4" placeholder="4.">
+        </div>
+        <div class="form-row">
+          <label>Which of the following organizations have you participated in and which interest you most? (Please specify)</label>
+        </div>
+        <div class="form-row">
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="athletics"> Athletics</label>
+            <label><input type="checkbox" name="religious_org"> Religious organization</label>
+            <label><input type="checkbox" name="glee_club"> Glee Club</label>
+            <label><input type="checkbox" name="dramatics"> Dramatics</label>
+            <label><input type="checkbox" name="chess_club"> Chess Club</label>
+            <label><input type="checkbox" name="scouting"> Scouting</label>
+            <label><input type="checkbox" name="org_others"> Others, please specify</label>
+            <input type="text" name="org_others_specify">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Occupational position in the organization:</label>
+          <label><input type="checkbox" name="officer"> Officer</label>
+          <label><input type="checkbox" name="member"> Member</label>
+          <label><input type="checkbox" name="org_position_others"> Others, please specify</label>
+          <input type="text" name="org_position_others_specify">
+        </div>
+
+        <h2>VI. Test Results</h2>
+        <table class="edu-table">
+          <thead>
+            <tr>
+              <th>DATE</th>
+              <th>NAME OF TEST</th>
+              <th>RS</th>
+              <th>PR</th>
+              <th>DESCRIPTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="date" name="test_date1"></td>
+              <td><input type="text" name="test_name1"></td>
+              <td><input type="text" name="test_rs1"></td>
+              <td><input type="text" name="test_pr1"></td>
+              <td><input type="text" name="test_desc1"></td>
+            </tr>
+            <tr>
+              <td><input type="date" name="test_date2"></td>
+              <td><input type="text" name="test_name2"></td>
+              <td><input type="text" name="test_rs2"></td>
+              <td><input type="text" name="test_pr2"></td>
+              <td><input type="text" name="test_desc2"></td>
+            </tr>
+            <!-- Add more rows as needed -->
+          </tbody>
+        </table>
+
+        <h2>VII. Significant Notes <span style="font-size:0.9em;">(For Guidance Counselors only)</span></h2>
+        <table class="edu-table">
+          <thead>
+            <tr>
+              <th>DATE</th>
+              <th>INCIDENT</th>
+              <th>REMARKS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="date" name="note_date1"></td>
+              <td><input type="text" name="note_incident1"></td>
+              <td><input type="text" name="note_remarks1"></td>
+            </tr>
+            <tr>
+              <td><input type="date" name="note_date2"></td>
+              <td><input type="text" name="note_incident2"></td>
+              <td><input type="text" name="note_remarks2"></td>
+            </tr>
+            <!-- Add more rows as needed -->
+          </tbody>
+        </table>
+        <button type="submit">Submit</button>
+      </form>
+    </section>
+  </main>
+  <button id="backToTop" title="Back to Top">
+    <img id="rocketImg" src="rocket.gif" alt="Rocket" style="width:36px; transition: transform 0.3s;">
+  </button>
+  <script>
+  // Show/hide button on scroll
+  window.onscroll = function() {
+    document.getElementById("backToTop").style.display =
+      (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200)
+        ? "flex" : "none";
+  };
+
+  // Handle rocket animation on click
+  document.getElementById("backToTop").onclick = function() {
+    var rocket = document.getElementById("rocketImg");
+    rocket.src = "rocket.gif"; // Use your animated gif
+    rocket.classList.add("rotated");
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    // Optionally, revert to static image after scroll
+    setTimeout(function() {
+      rocket.src = "rocket.gif";
+      rocket.classList.remove("rotated");
+    }, 1200); // Adjust time to match gif duration
+  };
+</script>
+<!-- Add this before </body> in index.html or update.html -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Initialize Supabase
+  const supabaseUrl = 'https://npyyaoddrquxwvkliupl.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0';
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  // Example: Fetch all students (replace with your logic)
+  async function fetchStudents() {
+    const { data, error } = await supabase.from('students').select('*');
+    if (error) {
+      console.error(error);
+    } else {
+      console.log(data);
+    }
+  }
+
+  // Example: Call fetchStudents on page load (optional)
+  // fetchStudents();
+
+  document.querySelector('.iirf-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    // Collect all checked incomes
+    data.income = Array.from(document.querySelectorAll('input[name="income"]:checked')).map(cb => cb.value).join(', ');
+
+    // Collect all checked residences
+    data.residence = Array.from(document.querySelectorAll('input[name="residence"]:checked')).map(cb => cb.value).join(', ');
+
+    // Insert into Supabase
+    const { error } = await supabase.from('iirf_forms').insert([data]);
+    if (error) {
+      alert('Error saving form: ' + error.message);
+    } else {
+      alert('Form submitted successfully!');
+      e.target.reset();
+    }
+  });
+</script>
+</body>
+</html>

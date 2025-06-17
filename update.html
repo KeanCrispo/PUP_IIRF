@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PUP_IIRF - Individual Inventory Record Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather:700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Merriweather', serif;
+    background: url('PUP MULANAY.jpg') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    /* Animated maroon and gold gradient overlay */
+    background: linear-gradient(120deg, rgba(255,215,0,0.2), rgba(128,0,0,0.290), rgba(255,215,0,0.35), rgba(128,0,0,0.35));
+    background-size: 300% 300%;
+    animation: gradientMove 8s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  main, .main-card {
+    position: relative;
+    z-index: 1;
+
+    .form-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .form-row label {
+      min-width: 120px;
+      margin-right: 16px;
+    }
+
+    .form-row input[type="text"] {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 1.1em;
+      background: #fafafa;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo-circle">
+      <img src="PUP.png" alt="PUP Logo" class="logo left-logo">
+    </div>
+    <div class="header-content">
+      <h1>UPDATE FORM</h1>
+      <div class="gold-line"></div>
+    </div>
+  </header>
+  <!-- Place this after your <header class="main-header"> ... </header> -->
+  <nav class="main-menu">
+    <ul>
+      <li><a href="admin.html">ADMIN</a></li>
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="help.html">HELP</a></li>
+    </ul>
+  </nav>
+  <main>
+    <section class="main-card">
+      <form class="iirf-form" id="updateForm">
+        <h2>STUDENT INFORMATION UPDATE FORM</h2>
+        <input type="hidden" name="id" id="record_id">
+
+        <!-- I. Personal Information -->
+        <div class="form-row">
+          <label>Name:</label>
+          <input type="text" name="surname" placeholder="Surname" required>
+          <input type="text" name="first_name" placeholder="First Name" required>
+          <input type="text" name="middle_name" placeholder="Middle Name">
+        </div>
+        <div class="form-row">
+          <label>Gender:</label>
+          <select name="gender" required>
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+          <label>Age:</label>
+          <input type="number" name="age" min="0" style="width:80px;">
+          <label>Civil Status:</label>
+          <input type="text" name="civil_status">
+        </div>
+        <div class="form-row">
+          <label>Course, Year and Section:</label>
+          <input type="text" name="course_year_section" style="width:300px;">
+        </div>
+        <div class="form-row">
+          <label>Height (m):</label>
+          <input type="text" name="height" style="width:80px;">
+          <label>Weight:</label>
+          <input type="text" name="weight" style="width:80px;">
+          <label>Complexion:</label>
+          <input type="text" name="complexion" style="width:120px;">
+        </div>
+        <div class="form-row">
+          <label>Date of Birth:</label>
+          <input type="date" name="date_of_birth">
+          <label>Place of Birth:</label>
+          <input type="text" name="place_of_birth">
+        </div>
+        <div class="form-row">
+          <label>City Address:</label>
+          <input type="text" name="city_address" style="width:300px;">
+        </div>
+        <div class="form-row">
+          <label>Provincial Address:</label>
+          <input type="text" name="provincial_address" style="width:300px;">
+        </div>
+        <div class="form-row">
+          <label>Email Address:</label>
+          <input type="email" name="email">
+          <label>Telephone No.:</label>
+          <input type="text" name="telephone">
+          <label>Mobile No.:</label>
+          <input type="text" name="mobile">
+        </div>
+        <div class="form-row">
+          <label>High School General Average:</label>
+          <input type="text" name="hs_general_average" style="width:120px;">
+          <label>Religion:</label>
+          <input type="text" name="religion" style="width:120px;">
+        </div>
+        <div class="form-row">
+          <label>If working, employer name/address:</label>
+          <input type="text" name="employer" style="width:300px;">
+        </div>
+        <div class="form-row">
+          <label>Person to contact in case of emergency:</label>
+          <input type="text" name="emergency_name" placeholder="Name">
+          <input type="text" name="emergency_relationship" placeholder="Relationship">
+          <input type="text" name="emergency_contact" placeholder="Contact Number">
+        </div>
+
+        <!-- Add more sections as in index.html, matching all name attributes to your table columns -->
+
+        <div style="margin-top: 32px; text-align: right;">
+          <button type="submit" class="submit-btn">Update</button>
+        </div>
+      </form>
+    </section>
+  </main>
+  <button id="backToTop" title="Back to Top">
+    <img id="rocketImg" src="rocket.gif" alt="Rocket" style="width:36px; transition: transform 0.3s;">
+  </button>
+  <script>
+  // Show/hide button on scroll
+  window.onscroll = function() {
+    document.getElementById("backToTop").style.display =
+      (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200)
+        ? "flex" : "none";
+  };
+
+  // Handle rocket animation on click
+  document.getElementById("backToTop").onclick = function() {
+    var rocket = document.getElementById("rocketImg");
+    rocket.src = "rocket.gif"; // Use your animated gif
+    rocket.classList.add("rotated");
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    // Optionally, revert to static image after scroll
+    setTimeout(function() {
+      rocket.src = "rocket.gif";
+      rocket.classList.remove("rotated");
+    }, 1200); // Adjust time to match gif duration
+  };
+
+  // Preview uploaded signature image
+  document.getElementById('signature_upload').addEventListener('change', function(e) {
+    const preview = document.getElementById('signaturePreview');
+    preview.innerHTML = '';
+    const file = e.target.files[0];
+    if (file) {
+      const img = document.createElement('img');
+      img.style.maxWidth = '300px';
+      img.style.maxHeight = '100px';
+      img.src = URL.createObjectURL(file);
+      preview.appendChild(img);
+    }
+  });
+
+  // Fetch record by id and fill form
+  async function loadRecord(id) {
+    const { data, error } = await supabase.from('iirf_forms').select('*').eq('id', id).single();
+    if (error) {
+      alert('Record not found!');
+      return;
+    }
+    for (const [key, value] of Object.entries(data)) {
+      const input = document.querySelector(`[name="${key}"]`);
+      if (input) input.value = value;
+    }
+  }
+
+  // Update record on submit
+  document.querySelector('.iirf-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    const id = data.id;
+    delete data.id; // Remove id from update payload
+
+    const { error } = await supabase.from('iirf_forms').update(data).eq('id', id);
+    if (error) {
+      alert('Error updating form: ' + error.message);
+    } else {
+      alert('Form updated successfully!');
+    }
+  });
+
+  document.getElementById('updateForm').addEventListener('submit', function(e) {
+    // Select all required inputs in the form
+    const requiredFields = [
+      'student_no', 'name', 'course_year', 'permanent_address', 'age', 'civil_status',
+      'height', 'weight', 'contact_number', 'religion', 'pup_email', 'pup_email_contact',
+      'father_name', 'father_contact', 'mother_name', 'mother_contact', 'guardian_name',
+      'guardian_contact', 'relationship_guardian'
+    ];
+    let valid = true;
+    for (const field of requiredFields) {
+      const input = this.elements[field];
+      if (input && !input.value.trim()) {
+        input.focus();
+        alert('Please fill out this field');
+        valid = false;
+        break;
+      }
+    }
+    if (!valid) e.preventDefault();
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Initialize Supabase
+  const supabaseUrl = 'https://npyyaoddrquxwvkliupl.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0';
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  // Example: Fetch all students (replace with your logic)
+  async function fetchStudents() {
+    const { data, error } = await supabase.from('students').select('*');
+    if (error) {
+      console.error(error);
+    } else {
+      console.log(data);
+    }
+  }
+
+  // Example: Call fetchStudents on page load (optional)
+  // fetchStudents();
+</script>
+</body>
+</html>

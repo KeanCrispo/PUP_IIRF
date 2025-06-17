@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PUP_IIRF Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Merriweather', serif;
+      /* Set the background image */
+      background: url('PUP MULANAY.jpg') no-repeat center center fixed;
+      background-size: cover;
+      /* Optional: add a dark overlay for readability */
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+    .login-container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(128,0,0,0.12);
+      max-width: 350px;
+      width: 100%;
+      padding: 2.5em 2em 2em 2em;
+      margin: 40px auto;
+      position: relative;
+      border: 3px solid #800000;
+      z-index: 1;
+    }
+    .login-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1em;
+    }
+    .login-logo img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #FFD700;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(128,0,0,0.08);
+    }
+    .login-container h2 {
+      text-align: center;
+      color: #800000;
+      margin-bottom: 1em;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 1em;
+      border: 1.5px solid #800000;
+      border-radius: 6px;
+      font-size: 1em;
+      background: #fff8e1;
+      color: #800000;
+      transition: border 0.2s;
+    }
+    .login-container input:focus {
+      border-color: #FFD700;
+      outline: none;
+      background: #fffde7;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(90deg, #FFD700 60%, #800000 100%);
+      color: #800000;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      margin-bottom: 0.5em;
+      box-shadow: 0 2px 8px rgba(128,0,0,0.08);
+    }
+    .login-container button:hover {
+      background: linear-gradient(90deg, #800000 60%, #FFD700 100%);
+      color: #fff;
+    }
+    .login-error {
+      color: #dc2626;
+      text-align: center;
+      margin-bottom: 1em;
+      font-weight: bold;
+    }
+    .link-btn {
+      background: none;
+      border: none;
+      color: #800000;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      margin: 0 0.5em;
+      font-size: 1em;
+      font-weight: 500;
+      transition: color 0.2s;
+      display: inline;
+    }
+    .link-btn:hover {
+      color: #FFD700;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-logo">
+      <img src="PUP.png" alt="PUP Logo">
+    </div>
+    <h2 id="formTitle">Admin Login</h2>
+    <div id="loginError" class="login-error"></div>
+    <!-- Only one main button in the form. Navigation links are styled as links below. -->
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit" id="submitBtn">Register</button>
+    </form>
+    <div style="text-align:center;margin-top:1em;">
+      <a href="#" class="link-btn" onclick="showRegister()">Register</a> |
+      <a href="#" class="link-btn" onclick="showForgot()">Forgot Password?</a>
+      <br>
+      <a href="#" class="link-btn" id="backBtn" onclick="showLogin()" style="display:none;">Back to Login</a>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = 'https://npyyaoddrquxwvkliupl.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    let mode = 'login'; // login, register, forgot
+
+    function showRegister() {
+      mode = 'register';
+      document.getElementById('formTitle').textContent = 'Register';
+      document.getElementById('submitBtn').textContent = 'Register';
+      document.getElementById('password').style.display = '';
+      document.getElementById('email').style.display = '';
+      document.getElementById('backBtn').style.display = '';
+      document.getElementById('loginForm').reset();
+      document.getElementById('loginError').textContent = '';
+    }
+    function showForgot() {
+      mode = 'forgot';
+      document.getElementById('formTitle').textContent = 'Forgot Password';
+      document.getElementById('submitBtn').textContent = 'Send Link';
+      document.getElementById('password').style.display = 'none';
+      document.getElementById('email').style.display = '';
+      document.getElementById('backBtn').style.display = '';
+      document.getElementById('loginForm').reset();
+      document.getElementById('loginError').textContent = '';
+    }
+    function showLogin() {
+      mode = 'login';
+      document.getElementById('formTitle').textContent = 'Admin Login';
+      document.getElementById('submitBtn').textContent = 'Login';
+      document.getElementById('password').style.display = '';
+      document.getElementById('email').style.display = '';
+      document.getElementById('backBtn').style.display = 'none';
+      document.getElementById('loginForm').reset();
+      document.getElementById('loginError').textContent = '';
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (mode === 'login') {
+        // Login with Supabase Auth
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          document.getElementById('loginError').textContent = error.message || "Login failed.";
+        } else {
+          sessionStorage.setItem('iirf_admin_logged_in', 'yes');
+          window.location.href = "admin.html";
+        }
+      } else if (mode === 'register') {
+        // Register with Supabase Auth
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+          document.getElementById('loginError').textContent = error.message || "Registration failed.";
+        } else {
+          document.getElementById('loginError').style.color = "#059669";
+          document.getElementById('loginError').textContent = "Registration successful! Please check your email to confirm.";
+          setTimeout(showLogin, 2000);
+        }
+      } else if (mode === 'forgot') {
+        // Send password reset email
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+        if (error) {
+          document.getElementById('loginError').textContent = error.message || "Failed to send reset link.";
+        } else {
+          document.getElementById('loginError').style.color = "#059669";
+          document.getElementById('loginError').textContent = "Password reset link sent! Check your email.";
+          setTimeout(showLogin, 2000);
+        }
+      }
+    });
+
+    // Default to login
+    showLogin();
+  </script>
+</body>
+</html>
