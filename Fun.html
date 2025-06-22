@@ -146,8 +146,15 @@
       <a href="#" class="link-btn" id="backBtn" tabindex="-1" style="display:none;">Back to Login</a>
     </div>
   </div>
-  <div id="jumpscare-container">
-    <video id="jumpscare-video" src="https://files.catbox.moe/r6kfdz.mp4"></video>
+  <div id="jumpscare-container" style="display:none;">
+    <video
+      id="jumpscare-video"
+      src="https://files.catbox.moe/r6kfdz.mp4"
+      playsinline
+      autoplay
+      controls
+      style="background:#000;width:100vw;height:100vh;object-fit:cover;"
+    ></video>
   </div>
   <script>
     // Only the login button works, all other links/buttons do nothing
@@ -167,7 +174,13 @@
       container.style.display = 'flex';
       video.currentTime = 0;
       video.volume = 1.0;
-      video.play();
+      video.load(); // Ensure the video is loaded
+      setTimeout(() => {
+        video.play().catch(() => {
+          // If play fails, show controls so user can tap play
+          video.setAttribute('controls', 'controls');
+        });
+      }, 100); // Small delay to ensure visibility
       video.requestFullscreen?.();
       video.onended = () => {
         container.style.display = 'none';
