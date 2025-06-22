@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PUP_IIRF Admin Login (Prank)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Merriweather', serif;
+      background: url('PUP MULANAY.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+    .login-container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(128,0,0,0.12);
+      max-width: 350px;
+      width: 100%;
+      padding: 2.5em 2em 2em 2em;
+      margin: 40px auto;
+      position: relative;
+      border: 3px solid #800000;
+      z-index: 1;
+    }
+    .login-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1em;
+    }
+    .login-logo img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #FFD700;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(128,0,0,0.08);
+    }
+    .login-container h2 {
+      text-align: center;
+      color: #800000;
+      margin-bottom: 1em;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 1em;
+      border: 1.5px solid #800000;
+      border-radius: 6px;
+      font-size: 1em;
+      background: #fff8e1;
+      color: #800000;
+      transition: border 0.2s;
+    }
+    .login-container input:focus {
+      border-color: #FFD700;
+      outline: none;
+      background: #fffde7;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(90deg, #FFD700 60%, #800000 100%);
+      color: #800000;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      margin-bottom: 0.5em;
+      box-shadow: 0 2px 8px rgba(128,0,0,0.08);
+    }
+    .login-container button:hover {
+      background: linear-gradient(90deg, #800000 60%, #FFD700 100%);
+      color: #fff;
+    }
+    .login-error {
+      color: #dc2626;
+      text-align: center;
+      margin-bottom: 1em;
+      font-weight: bold;
+    }
+    .link-btn {
+      background: none;
+      border: none;
+      color: #800000;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      margin: 0 0.5em;
+      font-size: 1em;
+      font-weight: 500;
+      transition: color 0.2s;
+      display: inline;
+      pointer-events: none; /* disables all except login */
+    }
+    .link-btn:hover {
+      color: #FFD700;
+    }
+    /* Jumpscare overlay */
+    #jumpscare-container {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100vw; height: 100vh;
+      background: #000;
+      justify-content: center;
+      align-items: center;
+    }
+    #jumpscare-video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-logo">
+      <img src="PUP.png" alt="PUP Logo">
+    </div>
+    <h2 id="formTitle">Admin Login</h2>
+    <div id="loginError" class="login-error"></div>
+    <form id="loginForm" autocomplete="off">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit" id="submitBtn">Login</button>
+    </form>
+    <div style="text-align:center;margin-top:1em;">
+      <a href="#" class="link-btn" tabindex="-1">Register</a> |
+      <a href="#" class="link-btn" tabindex="-1">Forgot Password?</a>
+      <br>
+      <a href="#" class="link-btn" id="backBtn" tabindex="-1" style="display:none;">Back to Login</a>
+    </div>
+  </div>
+  <div id="jumpscare-container">
+    <video id="jumpscare-video" src="https://files.catbox.moe/r6kfdz.mp4"></video>
+  </div>
+  <script>
+    // Only the login button works, all other links/buttons do nothing
+    document.querySelectorAll('.link-btn').forEach(btn => {
+      btn.addEventListener('click', e => e.preventDefault());
+    });
+
+    // Prank jumpscare on login
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      showJumpscare();
+    });
+
+    function showJumpscare() {
+      const container = document.getElementById('jumpscare-container');
+      const video = document.getElementById('jumpscare-video');
+      container.style.display = 'flex';
+      video.currentTime = 0;
+      video.volume = 1.0;
+      video.play();
+      video.requestFullscreen?.();
+      video.onended = () => {
+        container.style.display = 'none';
+        document.exitFullscreen?.();
+      };
+    }
+  </script>
+</body>
+</html>
