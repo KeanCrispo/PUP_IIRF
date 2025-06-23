@@ -298,6 +298,7 @@ const canvas = document.getElementById('signature-pad');
 const ctx = canvas.getContext('2d');
 let drawing = false;
 
+// Mouse events
 canvas.addEventListener('mousedown', e => {
   drawing = true;
   ctx.beginPath();
@@ -311,31 +312,38 @@ canvas.addEventListener('mousemove', e => {
 });
 canvas.addEventListener('mouseup', () => drawing = false);
 canvas.addEventListener('mouseleave', () => drawing = false);
+
+// Touch events for mobile
 canvas.addEventListener('touchstart', function(e) {
   e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  drawing = true;
-  ctx.beginPath();
-  ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-});
+  if (e.touches.length === 1) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    drawing = true;
+    ctx.beginPath();
+    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+  }
+}, { passive: false });
+
 canvas.addEventListener('touchmove', function(e) {
   e.preventDefault();
-  if (drawing) {
+  if (drawing && e.touches.length === 1) {
     const rect = canvas.getBoundingClientRect();
     const touch = e.touches[0];
     ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
     ctx.stroke();
   }
-});
+}, { passive: false });
+
 canvas.addEventListener('touchend', function(e) {
   e.preventDefault();
   drawing = false;
-});
+}, { passive: false });
+
 canvas.addEventListener('touchcancel', function(e) {
   e.preventDefault();
   drawing = false;
-});
+}, { passive: false });
 
 document.getElementById('clear-signature').onclick = function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
