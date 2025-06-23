@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css?family=Merriweather:700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    body {
+  body {
     min-height: 100vh;
     margin: 0;
     font-family: 'Merriweather', serif;
@@ -32,64 +32,158 @@
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
+
   main, .main-card {
-  position: relative;
-  z-index: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Make the text box smaller */
+.responsive-form input[type="text"] {
+  width: 70%; /* Adjust as needed */
+  max-width: 250px; /* Optional: set a max width */
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
+  .responsive-form input[type="text"],
+  .form-row input[type="text"],
+  .form-row input[type="number"],
+  .form-row input[type="email"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 1em;
+  }
+
+/* Responsive table container */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Optional: Make table look good on small screens */
+.edu-table {
+  width: 100%;
+  min-width: 600px; /* or whatever fits your columns */
+  border-collapse: collapse;
+}
+.edu-table th, .edu-table td {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  text-align: left;
+  font-size: 1em;
+}
+@media (max-width: 600px) {
+  .edu-table th, .edu-table td {
+    font-size: 0.95em;
+    padding: 4px 6px;
+  }
+}
+
+.main-card, .iirf-form {
+  max-width: 1200px;
+  margin: 24px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 24px 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .main-card, .iirf-form {
+    padding: 10px 2vw;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+  }
+}
 .form-row {
   display: flex;
-  align-items: center;
-  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .form-row label {
   min-width: 120px;
-  margin-right: 16px;
+  margin-bottom: 4px;
 }
 
-.form-row input[type="text"] {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 1.1em;
-  background: #fafafa;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* Make the back to top button bigger and center its icon */
-#backToTop {
-  position: fixed;
-  bottom: 32px;
-  right: 32px;
-  width: 80px;           /* Increased width */
-  height: 80px;          /* Increased height */
-  background: #800000;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-  cursor: pointer;
-  z-index: 100;
-  transition: background 0.2s, transform 0.2s;
-}
-
-#backToTop:hover {
-  background: #b22222;
-  transform: scale(1.1);
+.form-row input,
+.form-row select {
+  flex: 1 1 160px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 600px) {
-  #chatbot-icon-btn {
-    bottom: 120px !important; /* Move chatbot icon higher above the signature pad */
+  .form-row {
+    flex-direction: column;
+    gap: 4px;
   }
+  .form-row label {
+    min-width: 0;
+  }
+}
+
+.header-content h1 {
+  font-size: 2em;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .header-content h1 {
+    font-size: 1.2em;
+    text-align: center;
+  }
+  .logo-circle img {
+    width: 96px !important;  /* or your preferred fixed size */
+    height: 96px !important;
+  }
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.checkbox-group label {
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .checkbox-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px 0;
+  }
+}
+
+.section-label {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-size: 1.1em;
+  font-weight: bold;
+  display: block;
+}
+@media (max-width: 600px) {
+
   #backToTop {
     bottom: 120px !important; /* Move rocket button higher if needed */
   }
   #signature-pad {
-    margin-bottom: 80px !important; /* Add extra space below the signature pad */
+    margin-bottom: 200px !important; /* Add extra space below the signature pad */
   }
 }
   </style>
@@ -100,24 +194,23 @@
       <img src="PUP.png" alt="PUP Logo" class="logo left-logo">
     </div>
     <div class="header-content">
-      <h1>UPDATE FORM</h1>
+      <h1>INDIVIDUAL INVENTORY RECORD FORM</h1>
       <div class="gold-line"></div>
     </div>
   </header>
   <!-- Place this after your <header class="main-header"> ... </header> -->
   <nav class="main-menu">
-    <ul>
-      <li><a href="home.html">HOME</a></li>
-      <li><a href="help.html">HELP</a></li>
-    </ul>
-  </nav>
+  <ul>
+    <li><a href="home.html">HOME</a></li>
+    <li><a href="help.html">HELP</a></li>
+  </ul>
+</nav>
   <main>
     <section class="main-card">
-      <form class="iirf-form" id="updateForm">
-        <h2>STUDENT INFORMATION UPDATE FORM</h2>
-        <input type="hidden" name="id" id="record_id">
-
-        <!-- I. Personal Information -->
+      <!-- Formal content goes here -->
+      <p class="intro-text">
+        STUDENT INFORMATION UPDATE FORM
+      <form class="iirf-form">
         <div class="form-row">
           <label>Name:</label>
           <input type="text" name="surname" placeholder="Surname" required>
@@ -133,7 +226,7 @@
             <option>Other</option>
           </select>
           <label>Age:</label>
-          <input type="number" name="age" min="0" style="width:80px;">
+          <input type="number" name="age">
           <label>Civil Status:</label>
           <input type="text" name="civil_status">
         </div>
@@ -151,9 +244,9 @@
         </div>
         <div class="form-row">
           <label>Date of Birth:</label>
-          <input type="date" name="date_of_birth">
+          <input type="date" name="birth_date">
           <label>Place of Birth:</label>
-          <input type="text" name="place_of_birth">
+          <input type="text" name="birth_place">
         </div>
         <div class="form-row">
           <label>City Address:</label>
@@ -179,33 +272,50 @@
         </div>
         <div class="form-row">
           <label>If working, employer name/address:</label>
-          <input type="text" name="employer" style="width:300px;">
+          <input type="text" name="working_employer" style="width:300px;">
         </div>
         <div class="form-row">
           <label>Person to contact in case of emergency:</label>
-          <input type="text" name="emergency_name" placeholder="Name">
-          <input type="text" name="emergency_relationship" placeholder="Relationship">
-          <input type="text" name="emergency_contact" placeholder="Contact Number">
+          <input type="text" name="emergency_contact_name" placeholder="Name">
+          <input type="text" name="emergency_contact_relationship" placeholder="Relationship">
+          <input type="text" name="emergency_contact_number" placeholder="Contact Number">
         </div>
+
         <div class="form-row" style="flex-direction:column;align-items:flex-start;margin-bottom:20px;">
-          <label for="signature-pad"><b>Signature:</b></label>
-          <canvas id="signature-pad" width="350" height="120" style="border:1px solid #ccc; background:#fff; border-radius:6px; margin-bottom:8px;"></canvas>
-          <button type="button" id="clear-signature" style="margin-bottom:8px;">Clear Signature</button>
-          <input type="hidden" name="signature" id="signature-data">
-        </div>
-
-        <!-- Add more sections as in index.html, matching all name attributes to your table columns -->
-
-        <div style="margin-top: 32px; text-align: right;">
-          <button type="submit" class="submit-btn">Update</button>
-        </div>
+  <label for="signature-pad"><b>Signature:</b></label>
+  <canvas id="signature-pad" width="350" height="120" style="border:1px solid #ccc; background:#fff; border-radius:6px; margin-bottom:8px;display:block;"></canvas>
+  <button type="button" id="clear-signature" style="width:350px;display:block;margin-bottom:8px;">Clear Signature</button>
+  <input type="hidden" name="signature" id="signature-data">
+</div>
+<div class="form-row" style="justify-content:center;">
+  <button type="submit" style="padding:10px 32px;font-size:1.1em;background:#800000;color:#FFD700;border:none;border-radius:8px;cursor:pointer;">
+    Update
+  </button>
+</div>
       </form>
     </section>
   </main>
-  <button id="backToTop" title="Back to Top">
-    <img id="rocketImg" src="rocket.gif" alt="Rocket" style="width:55px; transition: transform 0.3s;">
-  </button>
-  <script>
+  <button id="backToTop" title="Back to Top" 
+  style="
+    position: fixed;
+    bottom: 30px;
+    right: 30px; /* or left: 30px if you want */
+    width: 70px;
+    height: 70px;
+    background: #800000;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    cursor: pointer;
+  ">
+  <img id="rocketImg" src="rocket.gif" alt="Rocket" style="width:48px; height:48px;">
+</button>
+
+<script>
   // Show/hide button on scroll
   window.onscroll = function() {
     document.getElementById("backToTop").style.display =
@@ -226,79 +336,53 @@
     }, 1200); // Adjust time to match gif duration
   };
 
-  // Preview uploaded signature image
-  document.getElementById('signature_upload').addEventListener('change', function(e) {
-    const preview = document.getElementById('signaturePreview');
-    preview.innerHTML = '';
-    const file = e.target.files[0];
-    if (file) {
-      const img = document.createElement('img');
-      img.style.maxWidth = '300px';
-      img.style.maxHeight = '100px';
-      img.src = URL.createObjectURL(file);
-      preview.appendChild(img);
-    }
-  });
+</script>
+<!-- Add this before </body> in index.html or update.html -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Initialize Supabase
+  const supabaseUrl = 'https://npyyaoddrquxwvkliupl.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0';
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  // Fetch record by id and fill form
-  async function loadRecord(id) {
-    const { data, error } = await supabase.from('iirf_forms').select('*').eq('id', id).single();
-    if (error) {
-      alert('Record not found!');
-      return;
-    }
-    for (const [key, value] of Object.entries(data)) {
-      const input = document.querySelector(`[name="${key}"]`);
-      if (input) input.value = value;
-    }
-  }
-
-  // Update record on submit (based on email)
   document.querySelector('.iirf-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
+
+    // Collect all checked incomes
+    data.income = Array.from(document.querySelectorAll('input[name="income"]:checked')).map(cb => cb.value).join(', ');
+
+    // Collect all checked residences
+    data.residence = Array.from(document.querySelectorAll('input[name="residence"]:checked')).map(cb => cb.value).join(', ');
+
+    // Use email as the unique identifier for update
     const email = data.email;
-    delete data.id; // Remove id from update payload if present
+    if (!email) {
+      alert('Email is required to update your record.');
+      return;
+    }
 
-    // Save signature as data URL
-    const sigData = document.getElementById('signature-data').value;
-    if (sigData) data.signature = sigData;
+    // Update the record in Supabase
+    const { error } = await supabase
+      .from('iirf_forms')
+      .update(data)
+      .eq('email', email);
 
-    const { error } = await supabase.from('iirf_forms').update(data).eq('email', email);
     if (error) {
       alert('Error updating form: ' + error.message);
     } else {
       alert('Form updated successfully!');
+      // Optionally reset the form
+      // e.target.reset();
     }
   });
-
-  document.getElementById('updateForm').addEventListener('submit', function(e) {
-    // Select all required inputs in the form
-    const requiredFields = [
-      'student_no', 'name', 'course_year', 'permanent_address', 'age', 'civil_status',
-      'height', 'weight', 'contact_number', 'religion', 'pup_email', 'pup_email_contact',
-      'father_name', 'father_contact', 'mother_name', 'mother_contact', 'guardian_name',
-      'guardian_contact', 'relationship_guardian'
-    ];
-    let valid = true;
-    for (const field of requiredFields) {
-      const input = this.elements[field];
-      if (input && !input.value.trim()) {
-        input.focus();
-        alert('Please fill out this field');
-        valid = false;
-        break;
-      }
-    }
-    if (!valid) e.preventDefault();
-  });
-
+</script>
+<script>
 const canvas = document.getElementById('signature-pad');
 const ctx = canvas.getContext('2d');
 let drawing = false;
 
-// Mouse events
 canvas.addEventListener('mousedown', e => {
   drawing = true;
   ctx.beginPath();
@@ -313,38 +397,6 @@ canvas.addEventListener('mousemove', e => {
 canvas.addEventListener('mouseup', () => drawing = false);
 canvas.addEventListener('mouseleave', () => drawing = false);
 
-// Touch events for mobile
-canvas.addEventListener('touchstart', function(e) {
-  e.preventDefault();
-  if (e.touches.length === 1) {
-    const rect = canvas.getBoundingClientRect();
-    const touch = e.touches[0];
-    drawing = true;
-    ctx.beginPath();
-    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-  }
-}, { passive: false });
-
-canvas.addEventListener('touchmove', function(e) {
-  e.preventDefault();
-  if (drawing && e.touches.length === 1) {
-    const rect = canvas.getBoundingClientRect();
-    const touch = e.touches[0];
-    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
-    ctx.stroke();
-  }
-}, { passive: false });
-
-canvas.addEventListener('touchend', function(e) {
-  e.preventDefault();
-  drawing = false;
-}, { passive: false });
-
-canvas.addEventListener('touchcancel', function(e) {
-  e.preventDefault();
-  drawing = false;
-}, { passive: false });
-
 document.getElementById('clear-signature').onclick = function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   document.getElementById('signature-data').value = '';
@@ -355,26 +407,32 @@ document.querySelector('.iirf-form').addEventListener('submit', function(e) {
   const sigData = canvas.toDataURL();
   document.getElementById('signature-data').value = sigData;
 });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // Initialize Supabase
-  const supabaseUrl = 'https://npyyaoddrquxwvkliupl.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0';
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  // Example: Fetch all students (replace with your logic)
-  async function fetchStudents() {
-    const { data, error } = await supabase.from('students').select('*');
-    if (error) {
-      console.error(error);
-    } else {
-      console.log(data);
-    }
+// Touch support for mobile devices
+canvas.addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  drawing = true;
+  ctx.beginPath();
+  ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+});
+canvas.addEventListener('touchmove', function(e) {
+  e.preventDefault();
+  if (drawing) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    ctx.stroke();
   }
-
-  // Example: Call fetchStudents on page load (optional)
-  // fetchStudents();
+});
+canvas.addEventListener('touchend', function(e) {
+  e.preventDefault();
+  drawing = false;
+});
+canvas.addEventListener('touchcancel', function(e) {
+  e.preventDefault();
+  drawing = false;
+});
 </script>
 </body>
-</html>
