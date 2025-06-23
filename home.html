@@ -1001,5 +1001,32 @@ document.querySelector('.iirf-form').addEventListener('submit', function(e) {
   const sigData = canvas.toDataURL();
   document.getElementById('signature-data').value = sigData;
 });
+
+// Touch support for mobile devices
+canvas.addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  drawing = true;
+  ctx.beginPath();
+  ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+});
+canvas.addEventListener('touchmove', function(e) {
+  e.preventDefault();
+  if (drawing) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    ctx.stroke();
+  }
+});
+canvas.addEventListener('touchend', function(e) {
+  e.preventDefault();
+  drawing = false;
+});
+canvas.addEventListener('touchcancel', function(e) {
+  e.preventDefault();
+  drawing = false;
+});
 </script>
 </body>
