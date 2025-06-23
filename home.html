@@ -844,25 +844,42 @@ document.getElementById('chatbot-close').onclick = function(e) {
   // fetchStudents();
 
   document.querySelector('.iirf-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
 
-    // Collect all checked incomes
-    data.income = Array.from(document.querySelectorAll('input[name="income"]:checked')).map(cb => cb.value).join(', ');
+  // Collect all checked incomes
+  data.income = Array.from(document.querySelectorAll('input[name="income"]:checked')).map(cb => cb.value).join(', ');
 
-    // Collect all checked residences
-    data.residence = Array.from(document.querySelectorAll('input[name="residence"]:checked')).map(cb => cb.value).join(', ');
+  // Collect all checked residences
+  data.residence = Array.from(document.querySelectorAll('input[name="residence"]:checked')).map(cb => cb.value).join(', ');
 
-    // Insert into Supabase
-    const { error } = await supabase.from('iirf_forms').insert([data]);
-    if (error) {
-      alert('Error saving form: ' + error.message);
-    } else {
-      alert('Form submitted successfully!');
-      e.target.reset();
-    }
-  });
+  // Check if email already exists
+  const { data: existing, error: selectError } = await supabase
+    .from('iirf_forms')
+    .select('email')
+    .eq('email', data.email)
+    .single();
+
+  if (existing) {
+    alert('This email is already registered. Please use the update form to modify your information.');
+    return;
+  }
+
+  if (selectError && selectError.code !== 'PGRST116') { // PGRST116 = No rows found
+    alert('Error checking email: ' + selectError.message);
+    return;
+  }
+
+  // Insert into Supabase
+  const { error } = await supabase.from('iirf_forms').insert([data]);
+  if (error) {
+    alert('Error saving form: ' + error.message);
+  } else {
+    alert('Form submitted successfully!');
+    e.target.reset();
+  }
+});
 
   const chatbot = document.getElementById('chatbot');
 const chatbotHeader = document.getElementById('chatbot-header');
