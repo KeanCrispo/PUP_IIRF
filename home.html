@@ -56,6 +56,135 @@
     height: 48px;      /* Match the input height */
     font-size: 1.1em;
   }
+  .responsive-form input[type="text"],
+  .form-row input[type="text"],
+  .form-row input[type="number"],
+  .form-row input[type="email"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 1em;
+  }
+}
+
+/* Responsive table container */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Optional: Make table look good on small screens */
+.edu-table {
+  width: 100%;
+  min-width: 600px; /* or whatever fits your columns */
+  border-collapse: collapse;
+}
+.edu-table th, .edu-table td {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  text-align: left;
+  font-size: 1em;
+}
+@media (max-width: 600px) {
+  .edu-table th, .edu-table td {
+    font-size: 0.95em;
+    padding: 4px 6px;
+  }
+}
+
+.main-card, .iirf-form {
+  max-width: 1200px;
+  margin: 24px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 24px 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .main-card, .iirf-form {
+    padding: 10px 2vw;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+  }
+}
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.form-row label {
+  min-width: 120px;
+  margin-bottom: 4px;
+}
+
+.form-row input,
+.form-row select {
+  flex: 1 1 160px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .form-row label {
+    min-width: 0;
+  }
+}
+
+.header-content h1 {
+  font-size: 2em;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .header-content h1 {
+    font-size: 1.2em;
+    text-align: center;
+  }
+  .logo-circle img {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.checkbox-group label {
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .checkbox-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px 0;
+  }
+}
+
+.section-label {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-size: 1.1em;
+  font-weight: bold;
+  display: block;
 }
   </style>
 </head>
@@ -155,73 +284,80 @@
         </div>
 
         <h2>II. Educational Background</h2>
-        <table class="edu-table">
-          <thead>
-            <tr>
-              <th>Level</th>
-              <th>School Graduated</th>
-              <th>School Address</th>
-              <th>Public/Private</th>
-              <th>Dates of Attendance</th>
-              <th>Honors/Special Awards</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Pre-elementary</td>
-              <td><input type="text" name="pre_elem_school"></td>
-              <td><input type="text" name="pre_elem_address"></td>
-              <td><input type="text" name="pre_elem_type"></td>
-              <td><input type="text" name="pre_elem_dates"></td>
-              <td><input type="text" name="pre_elem_honors"></td>
-            </tr>
-            <tr>
-              <td>Elementary</td>
-              <td><input type="text" name="elem_school"></td>
-              <td><input type="text" name="elem_address"></td>
-              <td><input type="text" name="elem_type"></td>
-              <td><input type="text" name="elem_dates"></td>
-              <td><input type="text" name="elem_honors"></td>
-            </tr>
-            <tr>
-              <td>High School</td>
-              <td><input type="text" name="hs_school"></td>
-              <td><input type="text" name="hs_address"></td>
-              <td><input type="text" name="hs_type"></td>
-              <td><input type="text" name="hs_dates"></td>
-              <td><input type="text" name="hs_honors"></td>
-            </tr>
-            <tr>
-              <td>Vocational</td>
-              <td><input type="text" name="vocational_school"></td>
-              <td><input type="text" name="vocational_address"></td>
-              <td><input type="text" name="vocational_type"></td>
-              <td><input type="text" name="vocational_dates"></td>
-              <td><input type="text" name="vocational_honors"></td>
-            </tr>
-            <tr>
-              <td>College (if any)</td>
-              <td><input type="text" name="college_school"></td>
-              <td><input type="text" name="college_address"></td>
-              <td><input type="text" name="college_type"></td>
-              <td><input type="text" name="college_dates"></td>
-              <td><input type="text" name="college_honors"></td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Example for Educational Background -->
+<div class="table-responsive">
+  <table class="edu-table">
+    <thead>
+      <tr>
+        <th>Level</th>
+        <th>School Graduated</th>
+        <th>School Address</th>
+        <th>Public/Private</th>
+        <th>Dates of Attendance</th>
+        <th>Honors/Special Awards</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Pre-elementary</td>
+        <td><input type="text" name="pre_elem_school"></td>
+        <td><input type="text" name="pre_elem_address"></td>
+        <td><input type="text" name="pre_elem_type"></td>
+        <td><input type="text" name="pre_elem_dates"></td>
+        <td><input type="text" name="pre_elem_honors"></td>
+      </tr>
+      <tr>
+        <td>Elementary</td>
+        <td><input type="text" name="elem_school"></td>
+        <td><input type="text" name="elem_address"></td>
+        <td><input type="text" name="elem_type"></td>
+        <td><input type="text" name="elem_dates"></td>
+        <td><input type="text" name="elem_honors"></td>
+      </tr>
+      <tr>
+        <td>High School</td>
+        <td><input type="text" name="hs_school"></td>
+        <td><input type="text" name="hs_address"></td>
+        <td><input type="text" name="hs_type"></td>
+        <td><input type="text" name="hs_dates"></td>
+        <td><input type="text" name="hs_honors"></td>
+      </tr>
+      <tr>
+        <td>Vocational</td>
+        <td><input type="text" name="vocational_school"></td>
+        <td><input type="text" name="vocational_address"></td>
+        <td><input type="text" name="vocational_type"></td>
+        <td><input type="text" name="vocational_dates"></td>
+        <td><input type="text" name="vocational_honors"></td>
+      </tr>
+      <tr>
+        <td>College (if any)</td>
+        <td><input type="text" name="college_school"></td>
+        <td><input type="text" name="college_address"></td>
+        <td><input type="text" name="college_type"></td>
+        <td><input type="text" name="college_dates"></td>
+        <td><input type="text" name="college_honors"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
         <div class="form-row">
           <label>Nature of Schooling:</label>
-          <label><input type="checkbox" name="schooling_continuous" value="1"> Continuous</label>
-          <label><input type="checkbox" name="schooling_interrupted" value="1"> Interrupted</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="schooling_continuous" value="1"> Continuous</label>
+            <label><input type="checkbox" name="schooling_interrupted" value="1"> Interrupted</label>
+          </div>
           <input type="text" name="schooling_interrupted_why" placeholder="If interrupted, why?">
         </div>
 
         <h2>III. Home and Family Background</h2>
         <div class="form-row">
+          <div class="checkbox-group"></div>
           <label>Name of Father:</label>
           <input type="text" name="father_name">
           <label>Age:</label>
           <input type="number" name="father_age">
+          <div class="checkbox-group">
           <label><input type="checkbox" name="father_living" value="1"> Living</label>
           <label><input type="checkbox" name="father_deceased" value="1"> Deceased</label>
         </div>
@@ -240,8 +376,10 @@
           <input type="text" name="mother_name">
           <label>Age:</label>
           <input type="number" name="mother_age" min="0" style="width:80px;">
-          <label><input type="checkbox" name="mother_living" value="1"> Living</label>
-          <label><input type="checkbox" name="mother_deceased" value="1"> Deceased</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="mother_living" value="1"> Living</label>
+            <label><input type="checkbox" name="mother_deceased" value="1"> Deceased</label>
+          </div>
         </div>
         <div class="form-row">
           <label>Educational Attainment:</label>
@@ -273,12 +411,14 @@
         </div>
         <div class="form-row">
           <label>Parents' Marital Relationship:</label>
-          <label><input type="checkbox" name="parents_marital_married_together" value="1"> Married and staying together</label>
-          <label><input type="checkbox" name="parents_marital_not_married_together" value="1"> Not Married but Living Together</label>
-          <label><input type="checkbox" name="parents_marital_single_parent" value="1"> Single Parent</label>
-          <label><input type="checkbox" name="parents_marital_married_separated" value="1"> Married but Separated</label>
-          <label><input type="checkbox" name="parents_marital_other" value="1"> Other (specify):</label>
-          <input type="text" name="parents_marital_other_specify">
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="parents_marital_married_together" value="1"> Married and staying together</label>
+            <label><input type="checkbox" name="parents_marital_not_married_together" value="1"> Not Married but Living Together</label>
+            <label><input type="checkbox" name="parents_marital_single_parent" value="1"> Single Parent</label>
+            <label><input type="checkbox" name="parents_marital_married_separated" value="1"> Married but Separated</label>
+            <label><input type="checkbox" name="parents_marital_other" value="1"> Other (specify):</label>
+            <input type="text" name="parents_marital_other_specify" style="min-width:120px;">
+          </div>
         </div>
         <div class="form-row">
           <label>Number of children in the family (including yourself):</label>
@@ -296,18 +436,22 @@
         </div>
         <div class="form-row">
           <label>Is your brother/sister who is gainfully employed providing support to your:</label>
-          <label><input type="checkbox" name="sibling_support_family" value="1"> Family</label>
-          <label><input type="checkbox" name="sibling_support_studies" value="1"> Your studies</label>
-          <label><input type="checkbox" name="sibling_support_own_family" value="1"> His/her own family</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="sibling_support_family" value="1"> Family</label>
+            <label><input type="checkbox" name="sibling_support_studies" value="1"> Your studies</label>
+            <label><input type="checkbox" name="sibling_support_own_family" value="1"> His/her own family</label>
+          </div>
         </div>
         <div class="form-row">
           <label>Who finances your schooling?</label>
-          <label><input type="checkbox" name="finances_parents" value="1"> Parents</label>
-          <label><input type="checkbox" name="finances_spouse" value="1"> Spouse</label>
-          <label><input type="checkbox" name="finances_relatives" value="1"> Relatives</label>
-          <label><input type="checkbox" name="finances_brother_sister" value="1"> Brother/Sister</label>
-          <label><input type="checkbox" name="finances_scholarship" value="1"> Scholarship</label>
-          <label><input type="checkbox" name="finances_self_supporting" value="1"> Self-supporting/working student</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="finances_parents" value="1"> Parents</label>
+            <label><input type="checkbox" name="finances_spouse" value="1"> Spouse</label>
+            <label><input type="checkbox" name="finances_relatives" value="1"> Relatives</label>
+            <label><input type="checkbox" name="finances_brother_sister" value="1"> Brother/Sister</label>
+            <label><input type="checkbox" name="finances_scholarship" value="1"> Scholarship</label>
+            <label><input type="checkbox" name="finances_self_supporting" value="1"> Self-supporting/working student</label>
+          </div>
         </div>
         <div class="form-row">
           <label>Parents' Total Monthly Income:</label>
@@ -329,13 +473,17 @@
         </div>
         <div class="form-row">
           <label>Do you have a quiet place to study?</label>
-          <label><input type="checkbox" name="quiet_place_yes" value="1"> Yes</label>
-          <label><input type="checkbox" name="quiet_place_no" value="1"> No</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="quiet_place_yes" value="1"> Yes</label>
+            <label><input type="checkbox" name="quiet_place_no" value="1"> No</label>
+          </div>
         </div>
         <div class="form-row">
           <label>Do you share your room with anyone?</label>
-          <label><input type="checkbox" name="share_room_yes" value="1"> Yes</label>
-          <label><input type="checkbox" name="share_room_no" value="1"> No</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="share_room_yes" value="1"> Yes</label>
+            <label><input type="checkbox" name="share_room_no" value="1"> No</label>
+          </div>
           <input type="text" name="share_room_with" placeholder="If yes, with whom?">
         </div>
         <div class="form-row">
@@ -353,32 +501,42 @@
 
         <h2>IV. HEALTH</h2>
 
-        <strong>A. Physical</strong>
+        <div class="section-label">
+          <strong>A. Physical</strong>
+        </div>
         <div class="form-row">
           <label>Do you have problems with:</label>
         </div>
         <div class="form-row">
           <label>Your Vision:</label>
-          <label><input type="checkbox" name="vision_yes"> Yes</label>
-          <label><input type="checkbox" name="vision_no"> No</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="vision_yes"> Yes</label>
+            <label><input type="checkbox" name="vision_no"> No</label>
+          </div>
           <input type="text" name="vision_specify" placeholder="If Yes, please specify">
         </div>
         <div class="form-row">
           <label>Your Hearing:</label>
-          <label><input type="checkbox" name="hearing_yes"> Yes</label>
-          <label><input type="checkbox" name="hearing_no"> No</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="hearing_yes"> Yes</label>
+            <label><input type="checkbox" name="hearing_no"> No</label>
+          </div>
           <input type="text" name="hearing_specify" placeholder="If Yes, please specify">
         </div>
         <div class="form-row">
           <label>Your Speech:</label>
-          <label><input type="checkbox" name="speech_yes"> Yes</label>
-          <label><input type="checkbox" name="speech_no"> No</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="speech_yes"> Yes</label>
+            <label><input type="checkbox" name="speech_no"> No</label>
+          </div>
           <input type="text" name="speech_specify" placeholder="If Yes, please specify">
         </div>
         <div class="form-row">
           <label>Your General Health:</label>
-          <label><input type="checkbox" name="general_health_yes"> Yes</label>
-          <label><input type="checkbox" name="general_health_no"> No</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="general_health_yes"> Yes</label>
+            <label><input type="checkbox" name="general_health_no"> No</label>
+          </div>
           <input type="text" name="general_health_specify" placeholder="If Yes, please specify">
         </div>
 
@@ -386,40 +544,42 @@
         <div class="form-row">
           <label>Previous Consultations:</label>
         </div>
-        <table class="edu-table">
-          <thead>
-            <tr>
-              <th>CONSULTED</th>
-              <th>YES</th>
-              <th>NO</th>
-              <th>WHEN</th>
-              <th>FOR WHAT?</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Psychiatrist</td>
-              <td><input type="checkbox" name="psychiatrist_yes"></td>
-              <td><input type="checkbox" name="psychiatrist_no"></td>
-              <td><input type="text" name="psychiatrist_when"></td>
-              <td><input type="text" name="psychiatrist_for_what"></td>
-            </tr>
-            <tr>
-              <td>Psychologist</td>
-              <td><input type="checkbox" name="psychologist_yes"></td>
-              <td><input type="checkbox" name="psychologist_no"></td>
-              <td><input type="text" name="psychologist_when"></td>
-              <td><input type="text" name="psychologist_for_what"></td>
-            </tr>
-            <tr>
-              <td>Counselor</td>
-              <td><input type="checkbox" name="counselor_yes"></td>
-              <td><input type="checkbox" name="counselor_no"></td>
-              <td><input type="text" name="counselor_when"></td>
-              <td><input type="text" name="counselor_for_what"></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="edu-table">
+            <thead>
+              <tr>
+                <th>CONSULTED</th>
+                <th>YES</th>
+                <th>NO</th>
+                <th>WHEN</th>
+                <th>FOR WHAT?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Psychiatrist</td>
+                <td><input type="checkbox" name="psychiatrist_yes"></td>
+                <td><input type="checkbox" name="psychiatrist_no"></td>
+                <td><input type="text" name="psychiatrist_when"></td>
+                <td><input type="text" name="psychiatrist_for_what"></td>
+              </tr>
+              <tr>
+                <td>Psychologist</td>
+                <td><input type="checkbox" name="psychologist_yes"></td>
+                <td><input type="checkbox" name="psychologist_no"></td>
+                <td><input type="text" name="psychologist_when"></td>
+                <td><input type="text" name="psychologist_for_what"></td>
+              </tr>
+              <tr>
+                <td>Counselor</td>
+                <td><input type="checkbox" name="counselor_yes"></td>
+                <td><input type="checkbox" name="counselor_no"></td>
+                <td><input type="text" name="counselor_when"></td>
+                <td><input type="text" name="counselor_for_what"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h2>V. Interests and Hobbies</h2>
         <div class="form-row">
@@ -479,6 +639,7 @@
         </div>
 
         <h2>VI. Test Results</h2>
+        <div class="table-responsive">
         <table class="edu-table">
           <thead>
             <tr>
@@ -507,37 +668,39 @@
             <!-- Add more rows as needed -->
           </tbody>
         </table>
+      </div>
 
         <h2>VII. Significant Notes <span style="font-size:0.9em;">(For Guidance Counselors only)</span></h2>
-        <table class="edu-table">
-          <thead>
-            <tr>
-              <th>DATE</th>
-              <th>INCIDENT</th>
-              <th>REMARKS</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><input type="date" name="note_date1"></td>
-              <td><input type="text" name="note_incident1"></td>
-              <td><input type="text" name="note_remarks1"></td>
-            </tr>
-            <tr>
-              <td><input type="date" name="note_date2"></td>
-              <td><input type="text" name="note_incident2"></td>
-              <td><input type="text" name="note_remarks2"></td>
-            </tr>
-            <!-- Add more rows as needed -->
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="edu-table">
+            <thead>
+              <tr>
+                <th>DATE</th>
+                <th>INCIDENT</th>
+                <th>REMARKS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="date" name="note_date1"></td>
+                <td><input type="text" name="note_incident1"></td>
+                <td><input type="text" name="note_remarks1"></td>
+              </tr>
+              <tr>
+                <td><input type="date" name="note_date2"></td>
+                <td><input type="text" name="note_incident2"></td>
+                <td><input type="text" name="note_remarks2"></td>
+              </tr>
+              <!-- Add more rows as needed -->
+            </tbody>
+          </table>
+        </div>
+
         <div class="form-row" style="flex-direction:column;align-items:flex-start;margin-bottom:20px;">
   <label for="signature-pad"><b>Signature:</b></label>
   <canvas id="signature-pad" width="350" height="120" style="border:1px solid #ccc; background:#fff; border-radius:6px; margin-bottom:8px;"></canvas>
   <button type="button" id="clear-signature" style="margin-bottom:8px;">Clear Signature</button>
   <input type="hidden" name="signature" id="signature-data">
-</div>
-        <button type="submit">Submit</button>
       </form>
     </section>
   </main>
@@ -827,4 +990,3 @@ document.querySelector('.iirf-form').addEventListener('submit', function(e) {
 });
 </script>
 </body>
-</html>
