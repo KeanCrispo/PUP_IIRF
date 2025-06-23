@@ -607,7 +607,7 @@
         }
 
         // Try to fetch logo, fallback if error
-        fetch('https://github.com/KeanCrispo/PUP_IIRF/raw/gh-pages/PUP.png'')
+        fetch('PUP.png')
           .then(res => {
             if (!res.ok) throw new Error('Image not found');
             return res.blob();
