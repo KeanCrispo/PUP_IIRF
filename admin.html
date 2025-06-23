@@ -144,6 +144,7 @@
             <div class="admin-header">
               <h2>Manage IIRF Submissions</h2>
               <button onclick="fetchIIRF()">Refresh</button>
+              <button onclick="downloadSummaryReport()" class="action-btn download-btn">Download Summary Report</button>
             </div>
             <div class="admin-search">
               <input type="text" id="searchInput" placeholder="Search by name or email..." oninput="filterTable()">
@@ -154,6 +155,7 @@
         </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
     <script>
       // Initialize Supabase
       const supabase = window.supabase.createClient('https://npyyaoddrquxwvkliupl.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0');
@@ -396,6 +398,236 @@
         URL.revokeObjectURL(url);
       };
 
+      // Download summary report
+      function downloadSummaryReport() {
+        const patterns = {
+          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A[^a-zA-Z]1[^a-zA-Z])\b/i,
+          'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A[^a-zA-Z]2[^a-zA-Z])\b/i,
+          'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A[^a-zA-Z]3[^a-zA-Z])\b/i,
+          'Fourth Year': /\b(fourth|4|4th|fory|yr4|year 4|4th yr|fourth year|senior|BEED 4|BEED 4th|BEED Fourth Year|BEED 4A|BEED Fourth|BPAPFM 4|BPAPFM 4th|BPAPFM Fourth Year|BPAPFM 4A|BSOA 4|BSOA 4th|BSOA Fourth Year|BSOA 4A|BSENTREP 4|BSENTREP 4th|BSENTREP Fourth Year|BSENTREP 4A|BSAM 4|BSAM 4th|BSAM Fourth Year|BSAM 4A|[^a-zA-Z]4[^a-zA-Z])\b/i
+        };
+        const summary = {
+          'First Year': 0,
+          'Second Year': 0,
+          'Third Year': 0,
+          'Fourth Year': 0
+        };
+        iirfData.forEach(row => {
+          const val = (row.course_year_section || '').toLowerCase();
+          if (patterns['First Year'].test(val)) summary['First Year']++;
+          else if (patterns['Second Year'].test(val)) summary['Second Year']++;
+          else if (patterns['Third Year'].test(val)) summary['Third Year']++;
+          else if (patterns['Fourth Year'].test(val)) summary['Fourth Year']++;
+        });
+
+        // Helper to generate the docx
+        function generateDocx(base64Logo) {
+          const { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, WidthType } = window.docx;
+          const children = [];
+
+          // Header with logo and text in a table
+          if (base64Logo) {
+            children.push(
+              new Table({
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        width: { size: 20, type: WidthType.PERCENTAGE },
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new ImageRun({
+                                data: Uint8Array.from(atob(base64Logo), c => c.charCodeAt(0)),
+                                transformation: { width: 70, height: 70 }
+                              })
+                            ],
+                            alignment: AlignmentType.CENTER
+                          })
+                        ],
+                        verticalAlign: "center",
+                      }),
+                      new TableCell({
+                        width: { size: 80, type: WidthType.PERCENTAGE },
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: "Republic of the Philippines",
+                                bold: false,
+                                font: "Times New Roman",
+                                size: 24
+                              })
+                            ],
+                            alignment: AlignmentType.LEFT,
+                            spacing: { after: 50 }
+                          }),
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: "POLYTECHNIC UNIVERSITY OF THE PHILIPPINES",
+                                bold: true,
+                                font: "Times New Roman",
+                                size: 24
+                              })
+                            ],
+                            alignment: AlignmentType.LEFT,
+                            spacing: { after: 50 }
+                          }),
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: "OFFICE OF THE VICE PRESIDENT FOR BRANCHES AND CAMPUSES",
+                                bold: true,
+                                font: "Times New Roman",
+                                size: 24
+                              })
+                            ],
+                            alignment: AlignmentType.LEFT,
+                            spacing: { after: 50 }
+                          }),
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: "MULANAY QUEZON BRANCH",
+                                bold: true,
+                                font: "Times New Roman",
+                                size: 24
+                              })
+                            ],
+                            alignment: AlignmentType.LEFT
+                          })
+                        ],
+                        verticalAlign: "center",
+                      })
+                    ]
+                  })
+                ],
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                margins: { top: 100, bottom: 100 },
+                borders: {
+                  top: { size: 0, color: "FFFFFF" },
+                  bottom: { size: 0, color: "FFFFFF" },
+                  left: { size: 0, color: "FFFFFF" },
+                  right: { size: 0, color: "FFFFFF" },
+                  insideHorizontal: { size: 0, color: "FFFFFF" },
+                  insideVertical: { size: 0, color: "FFFFFF" }
+                }
+              })
+            );
+          } else {
+            children.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: "Republic of the Philippines\nPOLYTECHNIC UNIVERSITY OF THE PHILIPPINES\nOFFICE OF THE VICE PRESIDENT FOR BRANCHES AND CAMPUSES\nMULANAY QUEZON BRANCH",
+                    bold: false,
+                    font: "Times New Roman",
+                    size: 24
+                  })
+                ],
+                alignment: AlignmentType.LEFT,
+                spacing: { after: 100 }
+              })
+            );
+          }
+
+          children.push(
+            new Paragraph({
+              children: [
+                new TextRun({ text: "________________________________________________________________________________", size: 18 })
+              ],
+              alignment: AlignmentType.LEFT,
+              spacing: { after: 200 }
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Student Population Summary Report", size: 24, bold: true })
+              ],
+              alignment: AlignmentType.CENTER
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Individual Inventory Record Form – Administrative Report", size: 24 })
+              ],
+              alignment: AlignmentType.CENTER
+            }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "This section presents the summarized data on student population based on year level, as documented in the Individual Inventory Record Form. The total number of students enrolled in each year level is as follows:", size: 24 })
+              ]
+            }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `The total number of students in First Year is ${summary['First Year']}.`, size: 24 })
+              ]
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `The total number of students in Second Year is ${summary['Second Year']}.`, size: 24 })
+              ]
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `The total number of students in Third Year is ${summary['Third Year']}.`, size: 24 })
+              ]
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `The total number of students in Fourth Year is ${summary['Fourth Year']}.`, size: 24 })
+              ]
+            }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "This report provides essential information for administrative planning, resource allocation, and student support services. All figures are based on the most recent and validated Individual Inventory Record submissions.", size: 24 })
+              ]
+            })
+          );
+
+          const doc = new Document({
+            sections: [{
+              properties: {},
+              children
+            }]
+          });
+
+          Packer.toBlob(doc).then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Student_Population_Summary_Report.docx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          });
+        }
+
+        // Try to fetch logo, fallback if error
+        fetch('PUP.png')
+          .then(res => {
+            if (!res.ok) throw new Error('Image not found');
+            return res.blob();
+          })
+          .then(blob => {
+            console.log('Logo loaded:', blob); // Add this line
+            const reader = new FileReader();
+            reader.onloadend = function () {
+              const base64Logo = reader.result.split(',')[1];
+              generateDocx(base64Logo);
+            };
+            reader.readAsDataURL(blob);
+          })
+          .catch((err) => {
+            console.error('Logo fetch error:', err);
+            generateDocx(null);
+          });
+      }
+      window.downloadSummaryReport = downloadSummaryReport;
+
       // Filter table by search
       function filterTable() {
         const val = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -431,10 +663,10 @@
       function renderYearSummary(data) {
         // Patterns for each year (case-insensitive)
         const patterns = {
-          'First Year': /\b(first|1st|[^a-zA-Z]1[^a-zA-Z])\b/i,
-          'Second Year': /\b(second|2nd|[^a-zA-Z]2[^a-zA-Z])\b/i,
-          'Third Year': /\b(third|3rd|[^a-zA-Z]3[^a-zA-Z])\b/i,
-          'Fourth Year': /\b(fourth|4th|[^a-zA-Z]4[^a-zA-Z])\b/i
+          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A[^a-zA-Z]1[^a-zA-Z])\b/i,
+          'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A[^a-zA-Z]2[^a-zA-Z])\b/i,
+          'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A[^a-zA-Z]3[^a-zA-Z])\b/i,
+          'Fourth Year': /\b(fourth|4|4th|fory|yr4|year 4|4th yr|fourth year|senior|BEED 4|BEED 4th|BEED Fourth Year|BEED 4A|BEED Fourth|BPAPFM 4|BPAPFM 4th|BPAPFM Fourth Year|BPAPFM 4A|BSOA 4|BSOA 4th|BSOA Fourth Year|BSOA 4A|BSENTREP 4|BSENTREP 4th|BSENTREP Fourth Year|BSENTREP 4A|BSAM 4|BSAM 4th|BSAM Fourth Year|BSAM 4A|[^a-zA-Z]4[^a-zA-Z])\b/i
         };
         const summary = {
           'First Year': 0,
