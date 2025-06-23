@@ -80,6 +80,18 @@
   background: #b22222;
   transform: scale(1.1);
 }
+
+@media (max-width: 600px) {
+  #chatbot-icon-btn {
+    bottom: 120px !important; /* Move chatbot icon higher above the signature pad */
+  }
+  #backToTop {
+    bottom: 120px !important; /* Move rocket button higher if needed */
+  }
+  #signature-pad {
+    margin-bottom: 80px !important; /* Add extra space below the signature pad */
+  }
+}
   </style>
 </head>
 <body>
@@ -295,6 +307,31 @@ canvas.addEventListener('mousemove', e => {
 });
 canvas.addEventListener('mouseup', () => drawing = false);
 canvas.addEventListener('mouseleave', () => drawing = false);
+canvas.addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  drawing = true;
+  ctx.beginPath();
+  ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+});
+canvas.addEventListener('touchmove', function(e) {
+  e.preventDefault();
+  if (drawing) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    ctx.stroke();
+  }
+});
+canvas.addEventListener('touchend', function(e) {
+  e.preventDefault();
+  drawing = false;
+});
+canvas.addEventListener('touchcancel', function(e) {
+  e.preventDefault();
+  drawing = false;
+});
 
 document.getElementById('clear-signature').onclick = function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
