@@ -253,15 +253,19 @@
     }
   }
 
-  // Update record on submit
+  // Update record on submit (based on email)
   document.querySelector('.iirf-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
-    const id = data.id;
-    delete data.id; // Remove id from update payload
+    const email = data.email;
+    delete data.id; // Remove id from update payload if present
 
-    const { error } = await supabase.from('iirf_forms').update(data).eq('id', id);
+    // Save signature as data URL
+    const sigData = document.getElementById('signature-data').value;
+    if (sigData) data.signature = sigData;
+
+    const { error } = await supabase.from('iirf_forms').update(data).eq('email', email);
     if (error) {
       alert('Error updating form: ' + error.message);
     } else {
