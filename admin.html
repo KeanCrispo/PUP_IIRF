@@ -710,6 +710,33 @@
             );
           }
 
+          // Add date and school year to the report
+          const now = new Date();
+          const options = { year: 'numeric', month: 'long', day: 'numeric' };
+          const formattedDate = now.toLocaleDateString('en-US', options);
+
+          // Compute school year (assume SY starts in June)
+          let syStart = now.getMonth() + 1 >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+          let syEnd = syStart + 1;
+          const schoolYear = `${syStart}-${syEnd}`;
+
+          children.push(
+            new Paragraph({
+              children: [
+                new TextRun({ text: `Date Generated: ${formattedDate}`, size: 24 })
+              ],
+              alignment: AlignmentType.LEFT,
+              spacing: { after: 50 }
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `School Year: ${schoolYear}`, size: 24 })
+              ],
+              alignment: AlignmentType.LEFT,
+              spacing: { after: 50 }
+            })
+          );
+
           children.push(
             new Paragraph({
               children: [
