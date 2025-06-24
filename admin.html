@@ -774,8 +774,9 @@
               ]
             })
           );
-          
+
           children.push(
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
             new Paragraph({
               children: [
                 new TextRun({ text: `Date Generated: ${formattedDate}`, size: 24 })
