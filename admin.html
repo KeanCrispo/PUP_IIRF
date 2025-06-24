@@ -812,12 +812,20 @@
             new Paragraph({
               children: [
                 new TextRun({ text: "______________________________", size: 24 }),
-                new TextRun({ text: "(Signature Over Printed Name)", size: 12, italics: true }),
+                new TextRun({ text: "(Signature Over Printed Name)", size: 24, italics: true })
+              ],
+              alignment: AlignmentType.LEFT,
+              spacing: { after: 50 }
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "(Signature Over Printed Name)", size: 24, italics: true })
               ],
               alignment: AlignmentType.LEFT,
               spacing: { after: 50 }
             })
           );
+          
 
           const doc = new Document({
             sections: [{
