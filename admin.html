@@ -166,6 +166,11 @@
         background: #FFD700;
         color: #800000;
       }
+      nav.main-menu ul li a img {
+        vertical-align: middle;
+        margin-right: 6px;
+        height: 22px;
+      }
       @media (max-width: 700px) {
         nav.main-menu ul {
           display: none;
@@ -278,9 +283,6 @@
     <h1>ADMIN DASHBOARD</h1>
     <div class="gold-line"></div>
   </div>
-  <button onclick="logout()" class="logout-btn" title="Logout">
-    <img src="Logout.png" alt="Logout" class="logout-icon" style="height:60px;width:auto;">
-  </button>
 </header>
     <nav class="main-menu">
       <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
@@ -293,6 +295,7 @@
         <li><a href="home.html">HOME</a></li>
         <li><a href="update.html">UPDATE</a></li>
         <li><a href="help.html">HELP</a></li>
+        <li><a href="#" id="logoutMenuLink"><img src="Logout.png" alt="Logout" style="height:22px;vertical-align:middle;margin-right:6px;">Logout</a></li>
       </ul>
     </nav>
     <main>
@@ -939,6 +942,10 @@
           mainMenuList.classList.remove('open');
         });
       });
+      document.getElementById('logoutMenuLink').addEventListener('click', function(e) {
+  e.preventDefault();
+  logout();
+});
     </script>
     <svg style="display:none;">
       <symbol id="icon-view" viewBox="0 0 16 16">
