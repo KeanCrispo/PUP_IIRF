@@ -356,25 +356,46 @@
     // Collect all checked residences
     data.residence = Array.from(document.querySelectorAll('input[name="residence"]:checked')).map(cb => cb.value).join(', ');
 
-    // Use email as the unique identifier for update
     const email = data.email;
-    if (!email) {
-      alert('Email is required to update your record.');
+    const courseYearSection = data.course_year_section;
+    if (!email || !courseYearSection) {
+      alert('Email and Course, Year and Section are required.');
       return;
     }
 
-    // Update the record in Supabase
-    const { error } = await supabase
+    // Check for a record with BOTH email and course_year_section
+    const { data: existing, error: selectError } = await supabase
       .from('iirf_forms')
-      .update(data)
-      .eq('email', email);
+      .select('id')
+      .eq('email', email)
+      .eq('course_year_section', courseYearSection)
+      .single();
 
-    if (error) {
-      alert('Error updating form: ' + error.message);
+    if (selectError && selectError.code !== 'PGRST116') {
+      alert('Error checking record: ' + selectError.message);
+      return;
+    }
+
+    if (existing && existing.id) {
+      // Update the existing record
+      const { error: updateError } = await supabase
+        .from('iirf_forms')
+        .update(data)
+        .eq('id', existing.id);
+      if (updateError) {
+        alert('Error updating form: ' + updateError.message);
+      } else {
+        alert('Form updated successfully!');
+      }
     } else {
-      alert('Form updated successfully!');
-      // Optionally reset the form
-      // e.target.reset();
+      // Insert as new record
+      const { error: insertError } = await supabase.from('iirf_forms').insert([data]);
+      if (insertError) {
+        alert('Error saving form: ' + insertError.message);
+      } else {
+        alert('New record added successfully!');
+        e.target.reset();
+      }
     }
   });
 </script>
