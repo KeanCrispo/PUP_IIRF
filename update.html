@@ -1,459 +1,837 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PUP_IIRF - IIRF UPDATE FORM</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css?family=Merriweather:700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <style>
-  body {
-    min-height: 100vh;
-    margin: 0;
-    font-family: 'Merriweather', serif;
-    background: url('PUP MULANAY.jpg') no-repeat center center fixed;
-    background-size: cover;
-    position: relative;
-  }
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    /* Animated maroon and gold gradient overlay */
-    background: linear-gradient(120deg, rgba(255,215,0,0.2), rgba(128,0,0,0.290), rgba(255,215,0,0.35), rgba(128,0,0,0.35));
-    background-size: 300% 300%;
-    animation: gradientMove 8s ease-in-out infinite;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  @keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  main, .main-card {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Make the text box smaller */
-.responsive-form input[type="text"] {
-  width: 70%; /* Adjust as needed */
-  max-width: 250px; /* Optional: set a max width */
-  padding: 0.5rem;
-  font-size: 1rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-  .responsive-form input[type="text"],
-  .form-row input[type="text"],
-  .form-row input[type="number"],
-  .form-row input[type="email"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    font-size: 1em;
-  }
-
-/* Responsive table container */
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
-}
-
-/* Optional: Make table look good on small screens */
-.edu-table {
-  width: 100%;
-  min-width: 600px; /* or whatever fits your columns */
-  border-collapse: collapse;
-}
-.edu-table th, .edu-table td {
-  padding: 6px 8px;
-  border: 1px solid #ccc;
-  text-align: left;
-  font-size: 1em;
-}
-@media (max-width: 600px) {
-  .edu-table th, .edu-table td {
-    font-size: 0.95em;
-    padding: 4px 6px;
-  }
-}
-
-.main-card, .iirf-form {
-  max-width: 1200px;
-  margin: 24px auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-  padding: 24px 32px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-@media (max-width: 600px) {
-  .main-card, .iirf-form {
-    padding: 10px 2vw;
-    border-radius: 0;
-    margin: 0;
-    box-shadow: none;
-  }
-}
-.form-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.form-row label {
-  min-width: 120px;
-  margin-bottom: 4px;
-}
-
-.form-row input,
-.form-row select {
-  flex: 1 1 160px;
-  min-width: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-@media (max-width: 600px) {
-  .form-row {
-    flex-direction: column;
-    gap: 4px;
-  }
-  .form-row label {
-    min-width: 0;
-  }
-}
-
-.header-content h1 {
-  font-size: 2em;
-  margin: 0;
-}
-@media (max-width: 600px) {
-  .header-content h1 {
-    font-size: 1.2em;
-    text-align: center;
-  }
-  .logo-circle img {
-    width: 96px !important;  /* or your preferred fixed size */
-    height: 96px !important;
-  }
-}
-
-.checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.checkbox-group label {
-  font-weight: normal;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 0;
-}
-
-@media (max-width: 600px) {
-  .checkbox-group {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px 0;
-  }
-}
-
-.section-label {
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-  font-size: 1.1em;
-  font-weight: bold;
-  display: block;
-}
-@media (max-width: 600px) {
-
-  #backToTop {
-    bottom: 120px !important; /* Move rocket button higher if needed */
-  }
-  #signature-pad {
-    margin-bottom: 200px !important; /* Add extra space below the signature pad */
-  }
-}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUP_IIRF Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      body {
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Merriweather', serif;
+        background: url('PUP MULANAY.jpg') no-repeat center center fixed;
+        background-size: cover;
+        position: relative;
+      }
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5em;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(128,0,0,0.07);
+      }
+      .admin-table th, .admin-table td {
+        border: 1px solid #bdbdbd;
+        padding: 8px 12px;
+        font-size: 1em;
+      }
+      .admin-table th {
+        background: #800000;
+        color: #FFD700;
+      }
+      .admin-table tbody tr:nth-child(even) {
+        background: #f9f3e6;
+      }
+      .admin-table tbody tr:nth-child(odd) {
+        background: #fff7ed;
+      }
+      .admin-table thead {
+        border-bottom: 2px solid #800000;
+      }
+      .admin-actions button {
+        margin-right: 5px;
+        padding: 2px 8px;
+        font-size: 0.95em;
+      }
+      .admin-header {
+        display: flex;
+        align-items: center;
+        gap: 1em;
+      }
+      .admin-header img {
+        height: 48px;
+      }
+      .admin-search {
+        margin: 1em 0;
+      }
+      .admin-search input {
+        padding: 4px 8px;
+        font-size: 1em;
+      }
+      .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 14px;
+        margin-right: 6px;
+        font-size: 1em;
+        font-weight: 500;
+        background: #f3f4f6;
+        color: #374151;
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      }
+      .action-btn svg {
+        vertical-align: middle;
+      }
+      .action-btn:hover {
+        background: #e0e7ef;
+      }
+      .view-btn { color: #2563eb; }
+      .edit-btn { color: #059669; }
+      .delete-btn { color: #dc2626; }
+      .delete-btn:hover { background: #fee2e2; }
+      .edit-btn:hover { background: #d1fae5; }
+      .view-btn:hover { background: #dbeafe; }
+      .download-btn { color: #7c3aed; }
+      .download-btn:hover { background: #ede9fe; }
+      .logout-btn {
+        position: absolute;
+        top: 24px;
+        right: 32px;
+        background: transparent;
+        border: none;
+        border-radius: 4px;
+        padding: 0;
+        cursor: pointer;
+        z-index: 10;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logout-btn:hover,
+      .logout-btn:focus {
+        background: rgba(255, 215, 0, 0.15);
+      }
+      .logout-icon {
+        height: 60px;
+        width: auto;
+        display: block;
+      }
+      .main-header {
+        position: relative;
+      }
+      .admin-table-scroll {
+        max-width: 100%;
+        max-height: 500px; /* Adjust as needed */
+        overflow-x: auto;
+        overflow-y: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(128,0,0,0.07);
+        background: #fff;
+      }
+      nav.main-menu {
+        position: relative;
+      }
+      nav.main-menu .hamburger {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        z-index: 1001;
+      }
+      nav.main-menu .hamburger span {
+        display: block;
+        height: 4px;
+        width: 28px;
+        margin: 5px auto;
+        background: #FFD700;
+        border-radius: 2px;
+        transition: 0.3s;
+      }
+      nav.main-menu ul {
+        display: flex;
+        gap: 1em;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      nav.main-menu ul li a {
+        text-decoration: none;
+        color: #800000;
+        font-weight: bold;
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition: background 0.2s;
+      }
+      nav.main-menu ul li a.active,
+      nav.main-menu ul li a:hover {
+        background: #FFD700;
+        color: #800000;
+      }
+      @media (max-width: 700px) {
+        nav.main-menu ul {
+          display: none;
+          flex-direction: column;
+          position: absolute;
+          top: 48px;
+          left: 0;
+          width: 100vw;
+          background: #fff;
+          box-shadow: 0 2px 8px rgba(128,0,0,0.07);
+          z-index: 1000;
+        }
+        nav.main-menu ul.open {
+          display: flex;
+        }
+        nav.main-menu .hamburger {
+          display: flex;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+    </style>
 </head>
 <body>
-  <header class="main-header">
-    <div class="logo-circle">
-      <img src="PUP.png" alt="PUP Logo" class="logo left-logo">
-    </div>
-    <div class="header-content">
-      <h1>IIRF UPDATE FORM</h1>
-      <div class="gold-line"></div>
-    </div>
-  </header>
-  <!-- Place this after your <header class="main-header"> ... </header> -->
-  <nav class="main-menu">
-  <ul>
-    <li><a href="home.html">HOME</a></li>
-    <li><a href="help.html">HELP</a></li>
-  </ul>
-</nav>
-  <main>
-    <section class="main-card">
-      <!-- Formal content goes here -->
-      <p class="intro-text">
-        STUDENT INFORMATION UPDATE FORM
-      <form class="iirf-form">
-        <div class="form-row">
-          <label>Name:</label>
-          <input type="text" name="surname" placeholder="Surname" required>
-          <input type="text" name="first_name" placeholder="First Name" required>
-          <input type="text" name="middle_name" placeholder="Middle Name">
-        </div>
-        <div class="form-row">
-          <label>Gender:</label>
-          <select name="gender" required>
-            <option value="">Select</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-          </select>
-          <label>Age:</label>
-          <input type="number" name="age">
-          <label>Civil Status:</label>
-          <input type="text" name="civil_status">
-        </div>
-        <div class="form-row">
-          <label>Course, Year and Section:</label>
-          <input type="text" name="course_year_section" style="width:300px;">
-        </div>
-        <div class="form-row">
-          <label>Height (m):</label>
-          <input type="text" name="height" style="width:80px;">
-          <label>Weight:</label>
-          <input type="text" name="weight" style="width:80px;">
-          <label>Complexion:</label>
-          <input type="text" name="complexion" style="width:120px;">
-        </div>
-        <div class="form-row">
-          <label>Date of Birth:</label>
-          <input type="date" name="birth_date">
-          <label>Place of Birth:</label>
-          <input type="text" name="birth_place">
-        </div>
-        <div class="form-row">
-          <label>City Address:</label>
-          <input type="text" name="city_address" style="width:300px;">
-        </div>
-        <div class="form-row">
-          <label>Provincial Address:</label>
-          <input type="text" name="provincial_address" style="width:300px;">
-        </div>
-        <div class="form-row">
-          <label>Email Address:</label>
-          <input type="email" name="email">
-          <label>Telephone No.:</label>
-          <input type="text" name="telephone">
-          <label>Mobile No.:</label>
-          <input type="text" name="mobile">
-        </div>
-        <div class="form-row">
-          <label>High School General Average:</label>
-          <input type="text" name="hs_general_average" style="width:120px;">
-          <label>Religion:</label>
-          <input type="text" name="religion" style="width:120px;">
-        </div>
-        <div class="form-row">
-          <label>If working, employer name/address:</label>
-          <input type="text" name="working_employer" style="width:300px;">
-        </div>
-        <div class="form-row">
-          <label>Person to contact in case of emergency:</label>
-          <input type="text" name="emergency_contact_name" placeholder="Name">
-          <input type="text" name="emergency_contact_relationship" placeholder="Relationship">
-          <input type="text" name="emergency_contact_number" placeholder="Contact Number">
-        </div>
+    <header class="main-header">
+      <div class="logo-circle">
+        <img src="PUP.png" alt="PUP Logo" class="logo left-logo">
+      </div>
+      <div class="header-content">
+        <h1>ADMIN DASHBOARD</h1>
+        <div class="gold-line"></div>
+      </div>
+      <button onclick="logout()" class="logout-btn" title="Logout">
+        <img src="Logout.png" alt="Logout" class="logout-icon" style="height:60px;width:auto;">
+      </button>
+    </header>
+    <nav class="main-menu">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul id="mainMenuList">
+        <li><a href="index.html" class="active">INDEX</a></li>
+        <li><a href="home.html">HOME</a></li>
+        <li><a href="update.html">UPDATE</a></li>
+        <li><a href="help.html">HELP</a></li>
+      </ul>
+    </nav>
+    <main>
+        <section class="main-card">
+            <div class="admin-header">
+              <h2>Manage IIRF Submissions</h2>
+              <button onclick="fetchIIRF()">Refresh</button>
+              <button onclick="downloadSummaryReport()" class="action-btn download-btn">Download Summary Report</button>
+            </div>
+            <div class="admin-search">
+              <input type="text" id="searchInput" placeholder="Search by name or email..." oninput="filterTable()">
+            </div>
+            <div id="adminTableContainer">
+              <p>Loading data...</p>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+    <script>
+      // Initialize Supabase
+      const supabase = window.supabase.createClient('https://npyyaoddrquxwvkliupl.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0');
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!session) window.location.href = 'login.html';
+      });
 
-        <div class="form-row" style="flex-direction:column;align-items:flex-start;margin-bottom:20px;">
-  <label for="signature-pad"><b>Signature:</b></label>
-  <canvas id="signature-pad" width="350" height="120" style="border:1px solid #ccc; background:#fff; border-radius:6px; margin-bottom:8px;display:block;"></canvas>
-  <button type="button" id="clear-signature" style="width:350px;display:block;margin-bottom:8px;">Clear Signature</button>
-  <input type="hidden" name="signature" id="signature-data">
-</div>
-<div class="form-row" style="justify-content:center;">
-  <button type="submit" style="padding:10px 32px;font-size:1.1em;background:#800000;color:#FFD700;border:none;border-radius:8px;cursor:pointer;">
-    Update
-  </button>
-</div>
-      </form>
-    </section>
-  </main>
-  <button id="backToTop" title="Back to Top" 
-  style="
-    position: fixed;
-    bottom: 30px;
-    right: 30px; /* or left: 30px if you want */
-    width: 70px;
-    height: 70px;
-    background: #800000;
-    border: none;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    cursor: pointer;
-  ">
-  <img id="rocketImg" src="rocket.gif" alt="Rocket" style="width:48px; height:48px;">
-</button>
+      let iirfData = [];
 
-<script>
-  // Show/hide button on scroll
-  window.onscroll = function() {
-    document.getElementById("backToTop").style.display =
-      (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200)
-        ? "flex" : "none";
-  };
-
-  // Handle rocket animation on click
-  document.getElementById("backToTop").onclick = function() {
-    var rocket = document.getElementById("rocketImg");
-    rocket.src = "rocket.gif"; // Use your animated gif
-    rocket.classList.add("rotated");
-    window.scrollTo({top: 0, behavior: 'smooth'});
-    // Optionally, revert to static image after scroll
-    setTimeout(function() {
-      rocket.src = "rocket.gif";
-      rocket.classList.remove("rotated");
-    }, 1200); // Adjust time to match gif duration
-  };
-
-</script>
-<!-- Add this before </body> in index.html or update.html -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // Initialize Supabase
-  const supabaseUrl = 'https://npyyaoddrquxwvkliupl.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0';
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-  document.querySelector('.iirf-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-
-    // Collect all checked incomes
-    data.income = Array.from(document.querySelectorAll('input[name="income"]:checked')).map(cb => cb.value).join(', ');
-
-    // Collect all checked residences
-    data.residence = Array.from(document.querySelectorAll('input[name="residence"]:checked')).map(cb => cb.value).join(', ');
-
-    const email = data.email;
-    const courseYearSection = data.course_year_section;
-    if (!email || !courseYearSection) {
-      alert('Email and Course, Year and Section are required.');
-      return;
-    }
-
-    // Check for a record with BOTH email and course_year_section
-    const { data: existing, error: selectError } = await supabase
-      .from('iirf_forms')
-      .select('id')
-      .eq('email', email)
-      .eq('course_year_section', courseYearSection)
-      .single();
-
-    if (selectError && selectError.code !== 'PGRST116') {
-      alert('Error checking record: ' + selectError.message);
-      return;
-    }
-
-    if (existing && existing.id) {
-      // Update the existing record
-      const { error: updateError } = await supabase
-        .from('iirf_forms')
-        .update(data)
-        .eq('id', existing.id);
-      if (updateError) {
-        alert('Error updating form: ' + updateError.message);
-      } else {
-        alert('Form updated successfully!');
+      // Check admin login status
+      if (sessionStorage.getItem('iirf_admin_logged_in') !== 'yes') {
+        window.location.href = 'login.html';
       }
-    } else {
-      // Insert as new record
-      const { error: insertError } = await supabase.from('iirf_forms').insert([data]);
-      if (insertError) {
-        alert('Error saving form: ' + insertError.message);
-      } else {
-        alert('New record added successfully!');
-        e.target.reset();
+
+      // Fetch all IIRF form submissions
+      async function fetchIIRF() {
+        document.getElementById('adminTableContainer').innerHTML = '<p>Loading data...</p>';
+        const { data, error } = await supabase.from('iirf_forms').select('*').order('id', { ascending: false });
+        if (error) {
+          document.getElementById('adminTableContainer').innerHTML = '<p style="color:red;">Error loading data: ' + error.message + '</p>';
+          return;
+        }
+        iirfData = data;
+        renderTable(data);
       }
-    }
-  });
-</script>
-<script>
-const canvas = document.getElementById('signature-pad');
-const ctx = canvas.getContext('2d');
-let drawing = false;
 
-canvas.addEventListener('mousedown', e => {
-  drawing = true;
-  ctx.beginPath();
-  ctx.moveTo(e.offsetX, e.offsetY);
-});
-canvas.addEventListener('mousemove', e => {
-  if (drawing) {
-    ctx.lineTo(e.offsetX, e.offsetY);
-    ctx.stroke();
-  }
-});
-canvas.addEventListener('mouseup', () => drawing = false);
-canvas.addEventListener('mouseleave', () => drawing = false);
+      // Render the table of submissions
+      function renderTable(data) {
+        if (!data.length) {
+          document.getElementById('adminTableContainer').innerHTML = '<p>No submissions found.</p>';
+          return;
+        }
+        let html = renderYearSummary(data);
+        html += `<table class="admin-table" id="adminTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Course/Section</th>
+              <th>Age</th>
+              <th>Father Name</th>
+              <th>Date Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>`;
+        for (const row of data) {
+          html += `<tr data-id="${row.id}">
+            <td>${row.id || ''}</td>
+            <td>${row.surname || ''}, ${row.first_name || ''} ${row.middle_name || ''}</td>
+            <td>${row['Email Address'] || row.email || ''}</td>
+            <td>${row['Course, Year and Section'] || row.course_year_section || ''}</td>
+            <td>${row.age || ''}</td>
+            <td>${row.father_name || ''}</td>
+            <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
+            <td class="admin-actions">
+              <button class="action-btn view-btn" onclick="viewDetails('${row.id}')">View</button>
+              <button class="action-btn edit-btn" onclick="editRow('${row.id}')">Edit</button>
+              <button class="action-btn delete-btn" onclick="deleteRow('${row.id}')">Delete</button>
+              <button class="action-btn download-btn" onclick="downloadRow('${row.id}')">Download</button>
+            </td>
+          </tr>`;
+        }
+        html += `</tbody></table>
+        <div id="detailsModal" style="display:none; position:fixed; top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1000;">
+          <div style="background:#fff;max-width:700px;width:90vw;max-height:90vh;overflow:auto;padding:2em;position:relative;">
+            <button onclick="closeModal()" style="position:absolute;top:8px;right:12px;font-size:1.2em;">&times;</button>
+            <div id="modalContent"></div>
+          </div>
+        </div>`;
+        document.getElementById('adminTableContainer').innerHTML = `
+          <div class="admin-table-scroll">
+            ${html}
+          </div>
+        `;
 
-document.getElementById('clear-signature').onclick = function() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  document.getElementById('signature-data').value = '';
-};
+        // Add event listeners for year filter
+        document.querySelectorAll('.year-filter').forEach(th => {
+          th.addEventListener('click', function() {
+            filterByYear(this.getAttribute('data-year'));
+          });
+        });
+      }
 
-// Save signature as data URL on submit
-document.querySelector('.iirf-form').addEventListener('submit', function(e) {
-  const sigData = canvas.toDataURL();
-  document.getElementById('signature-data').value = sigData;
-});
+      // View details modal
+      function viewDetails(id) {
+        const row = iirfData.find(r => r.id === id);
+        if (!row) return;
 
-// Touch support for mobile devices
-canvas.addEventListener('touchstart', function(e) {
-  e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  drawing = true;
-  ctx.beginPath();
-  ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-});
-canvas.addEventListener('touchmove', function(e) {
-  e.preventDefault();
-  if (drawing) {
-    const rect = canvas.getBoundingClientRect();
-    const touch = e.touches[0];
-    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
-    ctx.stroke();
-  }
-});
-canvas.addEventListener('touchend', function(e) {
-  e.preventDefault();
-  drawing = false;
-});
-canvas.addEventListener('touchcancel', function(e) {
-  e.preventDefault();
-  drawing = false;
-});
-</script>
+        // Helper for table rows
+        function tr(label, value) {
+          return `<tr><th style="text-align:left;background:#f5f5f5;">${label}</th><td>${value ? value : '—'}</td></tr>`;
+        }
+
+        let html = `<h3>Submission Details</h3>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">I. Personal Information</th></tr>
+          ${tr('Surname', row.surname)}
+          ${tr('First Name', row.first_name)}
+          ${tr('Middle Name', row.middle_name)}
+          ${tr('Gender', row.gender)}
+          ${tr('Age', row.age)}
+          ${tr('Civil Status', row.civil_status)}
+          ${tr('Course, Year and Section', row.course_year_section)}
+          ${tr('Height', row.height)}
+          ${tr('Weight', row.weight)}
+          ${tr('Complexion', row.complexion)}
+          ${tr('Date of Birth', row.birth_date)}
+          ${tr('Place of Birth', row.birth_place)}
+          ${tr('City Address', row.city_address)}
+          ${tr('Provincial Address', row.provincial_address)}
+          ${tr('Email Address', row.email)}
+          ${tr('Telephone No.', row.telephone)}
+          ${tr('Mobile No.', row.mobile)}
+          ${tr('High School General Average', row.hs_general_average)}
+          ${tr('Religion', row.religion)}
+          ${tr('If working, employer name/address', row.working_employer)}
+          ${tr('Person to contact in case of emergency', row.emergency_contact_name)}
+          ${tr('Relationship', row.emergency_contact_relationship)}
+          ${tr('Contact Number', row.emergency_contact_number)}
+
+          <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">II. Educational Background</th></tr>
+          ${tr('Pre-elementary School', row.pre_elem_school)}
+          ${tr('Pre-elementary Address', row.pre_elem_address)}
+          ${tr('Pre-elementary Type', row.pre_elem_type)}
+          ${tr('Pre-elementary Dates', row.pre_elem_dates)}
+          ${tr('Pre-elementary Honors', row.pre_elem_honors)}
+          ${tr('Elementary School', row.elem_school)}
+          ${tr('Elementary Address', row.elem_address)}
+          ${tr('Elementary Type', row.elem_type)}
+          ${tr('Elementary Dates', row.elem_dates)}
+          ${tr('Elementary Honors', row.elem_honors)}
+          ${tr('High School', row.hs_school)}
+          ${tr('High School Address', row.hs_address)}
+          ${tr('High School Type', row.hs_type)}
+          ${tr('High School Dates', row.hs_dates)}
+          ${tr('High School Honors', row.hs_honors)}
+          ${tr('Vocational School', row.vocational_school)}
+          ${tr('Vocational Address', row.vocational_address)}
+          ${tr('Vocational Type', row.vocational_type)}
+          ${tr('Vocational Dates', row.vocational_dates)}
+          ${tr('Vocational Honors', row.vocational_honors)}
+          ${tr('College School', row.college_school)}
+          ${tr('College Address', row.college_address)}
+          ${tr('College Type', row.college_type)}
+          ${tr('College Dates', row.college_dates)}
+          ${tr('College Honors', row.college_honors)}
+          ${tr('Nature of Schooling', (row.schooling_continuous ? 'Continuous ' : '') + (row.schooling_interrupted ? 'Interrupted' : ''))}
+          ${tr('If interrupted, why?', row.schooling_interrupted_why)}
+
+          <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">III. Home and Family Background</th></tr>
+          ${tr('Father Name', row.father_name)}
+          ${tr('Father Age', row.father_age)}
+          ${tr('Father Living', row.father_living ? 'Yes' : row.father_deceased ? 'Deceased' : '')}
+          ${tr('Father Educational Attainment', row.father_educ_attain)}
+          ${tr('Father Occupation', row.father_occupation)}
+          ${tr('Father Employer', row.father_employer)}
+          ${tr('Father Employer Address', row.father_employer_address)}
+          ${tr('Mother Name', row.mother_name)}
+          ${tr('Mother Age', row.mother_age)}
+          ${tr('Mother Living', row.mother_living ? 'Yes' : row.mother_deceased ? 'Deceased' : '')}
+          ${tr('Mother Educational Attainment', row.mother_educ_attain)}
+          ${tr('Mother Occupation', row.mother_occupation)}
+          ${tr('Mother Employer', row.mother_employer)}
+          ${tr('Mother Employer Address', row.mother_employer_address)}
+          ${tr('Guardian Name', row.guardian_name)}
+          ${tr('Guardian Age', row.guardian_age)}
+          ${tr('Guardian Relation', row.guardian_relation)}
+          ${tr('Guardian Educational Attainment', row.guardian_educ_attain)}
+          ${tr('Guardian Occupation', row.guardian_occupation)}
+          ${tr('Guardian Employer', row.guardian_employer)}
+          ${tr('Guardian Employer Address', row.guardian_employer_address)}
+          ${tr('Parents\' Marital Relationship', 
+            row.parents_marital_married_together ? 'Married and staying together' :
+            row.parents_marital_not_married_together ? 'Not Married but Living Together' :
+            row.parents_marital_single_parent ? 'Single Parent' :
+            row.parents_marital_married_separated ? 'Married but Separated' :
+            row.parents_marital_other ? 'Other: ' + (row.parents_marital_other_specify || '') : ''
+          )}
+          ${tr('Number of children in the family', row.num_children)}
+          ${tr('Number of Brothers', row.num_brothers)}
+          ${tr('Number of Sisters', row.num_sisters)}
+          ${tr('Number of siblings employed', row.num_siblings_employed)}
+          ${tr('Ordinal Position', row.ordinal_position)}
+          ${tr('Sibling support', 
+            (row.sibling_support_family ? 'Family ' : '') +
+            (row.sibling_support_studies ? 'Your studies ' : '') +
+            (row.sibling_support_own_family ? 'His/her own family' : '')
+          )}
+          ${tr('Who finances your schooling', 
+            (row.finances_parents ? 'Parents ' : '') +
+            (row.finances_spouse ? 'Spouse ' : '') +
+            (row.finances_relatives ? 'Relatives ' : '') +
+            (row.finances_brother_sister ? 'Brother/Sister ' : '') +
+            (row.finances_scholarship ? 'Scholarship ' : '') +
+            (row.finances_self_supporting ? 'Self-supporting/working student' : '')
+          )}
+          ${tr('Parents\' Total Monthly Income', row.income)}
+          ${tr('Other Income', row.income_others)}
+          ${tr('Do you have a quiet place to study?', row.quiet_place)}
+          ${tr('Do you share your room with anyone?', row.share_room)}
+          ${tr('If yes, with whom?', row.share_room_with)}
+          ${tr('Nature of Residence', row.residence)}
+
+          <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">Signature</th></tr>
+          <tr>
+            <td colspan="2" style="text-align:center;">
+              ${row.signature ? `<img src="${row.signature}" alt="Signature" style="max-width:350px;max-height:120px;border:1px solid #ccc;border-radius:6px;background:#fff;">` : '—'}
+            </td>
+          </tr>
+          <tr><th colspan="2" style="background:#f5f5f5;">Submitted At</th></tr>
+          <tr><td colspan="2">${row.created_at ? new Date(row.created_at).toLocaleString() : '—'}</td></tr>
+        </table>`;
+
+        document.getElementById('modalContent').innerHTML = html;
+        document.getElementById('detailsModal').style.display = 'flex';
+      }
+      function closeModal() {
+        document.getElementById('detailsModal').style.display = 'none';
+      }
+
+      // Delete a row
+      async function deleteRow(id) {
+        if (!confirm('Are you sure you want to delete this submission?')) return;
+        const { error } = await supabase.from('iirf_forms').delete().eq('id', id);
+        if (error) {
+          alert('Error deleting: ' + error.message);
+        } else {
+          iirfData = iirfData.filter(r => r.id !== id);
+          renderTable(iirfData);
+        }
+      }
+
+      // Download a row as CSV
+      window.downloadRow = function(id) {
+        const row = iirfData.find(r => r.id === id);
+        if (!row) return alert('Record not found!');
+        // Prepare CSV content for this row
+        const keys = Object.keys(row);
+        const csv = keys.join(',') + '\n' + keys.map(k => `"${(row[k] ?? '').toString().replace(/"/g, '""')}"`).join(',');
+        // Create a blob and trigger download
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `iirf_${row.id}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
+      // Download summary report
+      function downloadSummaryReport() {
+        const patterns = {
+          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A|DIT1|DOMT1[^a-zA-Z]1[^a-zA-Z])\b/i,
+          'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A|DIT2|DOMT2[^a-zA-Z]2[^a-zA-Z])\b/i,
+          'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A|DIT3|DOMT3[^a-zA-Z]3[^a-zA-Z])\b/i,
+          'Fourth Year': /\b(fourth|4|4th|fory|yr4|year 4|4th yr|fourth year|senior|BEED 4|BEED 4th|BEED Fourth Year|BEED 4A|BEED Fourth|BPAPFM 4|BPAPFM 4th|BPAPFM Fourth Year|BPAPFM 4A|BSOA 4|BSOA 4th|BSOA Fourth Year|BSOA 4A|BSENTREP 4|BSENTREP 4th|BSENTREP Fourth Year|BSENTREP 4A|BSAM 4|BSAM 4th|BSAM Fourth Year|BSAM 4A|[^a-zA-Z]4[^a-zA-Z])\b/i
+        };
+        const summary = {
+          'First Year': 0,
+          'Second Year': 0,
+          'Third Year': 0,
+          'Fourth Year': 0
+        };
+        iirfData.forEach(row => {
+          const val = (row.course_year_section || '').toLowerCase();
+          if (patterns['First Year'].test(val)) summary['First Year']++;
+          else if (patterns['Second Year'].test(val)) summary['Second Year']++;
+          else if (patterns['Third Year'].test(val)) summary['Third Year']++;
+          else if (patterns['Fourth Year'].test(val)) summary['Fourth Year']++;
+        });
+
+        // Helper to generate the docx
+        function generateDocx(base64Logo) {
+          const { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, WidthType } = window.docx;
+          const children = [];
+
+          // Header with logo and text in a table
+          if (base64Logo) {
+            children.push(
+              new Table({
+                rows: [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        width: { size: 20, type: WidthType.PERCENTAGE },
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new ImageRun({
+                                data: Uint8Array.from(atob(base64Logo), c => c.charCodeAt(0)),
+                                transformation: { width: 70, height: 70 }
+                              })
+                            ],
+                            alignment: AlignmentType.CENTER
+                          })
+                        ],
+                        verticalAlign: "center",
+                      }),
+                      new TableCell({
+                        width: { size: 80, type: WidthType.PERCENTAGE },
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: "Republic of the Philippines",
+                                bold: false,
+                                font: "Times New Roman",
+                                size: 24
+                              })
+                            ],
+                            alignment: AlignmentType.LEFT,
+                            spacing: { after: 50 }
+                          }),
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: "POLYTECHNIC UNIVERSITY OF THE PHILIPPINES",
+                                bold: true,
+                                font: "Times New Roman",
+                                size: 24
+                              })
+                            ],
+                            alignment: AlignmentType.LEFT,
+                            spacing: { after: 50 }
+                          }),
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: "OFFICE OF THE VICE PRESIDENT FOR BRANCHES AND CAMPUSES",
+                                bold: true,
+                                font: "Times New Roman",
+                                size: 24
+                              })
+                            ],
+                            alignment: AlignmentType.LEFT,
+                            spacing: { after: 50 }
+                          }),
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: "MULANAY QUEZON BRANCH",
+                                bold: true,
+                                font: "Times New Roman",
+                                size: 24
+                              })
+                            ],
+                            alignment: AlignmentType.LEFT
+                          })
+                        ],
+                        verticalAlign: "center",
+                      })
+                    ]
+                  })
+                ],
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                margins: { top: 100, bottom: 100 },
+                borders: {
+                  top: { size: 0, color: "FFFFFF" },
+                  bottom: { size: 0, color: "FFFFFF" },
+                  left: { size: 0, color: "FFFFFF" },
+                  right: { size: 0, color: "FFFFFF" },
+                  insideHorizontal: { size: 0, color: "FFFFFF" },
+                  insideVertical: { size: 0, color: "FFFFFF" }
+                }
+              })
+            );
+          } else {
+            children.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: "Republic of the Philippines\nPOLYTECHNIC UNIVERSITY OF THE PHILIPPINES\nOFFICE OF THE VICE PRESIDENT FOR BRANCHES AND CAMPUSES\nMULANAY QUEZON BRANCH",
+                    bold: false,
+                    font: "Times New Roman",
+                    size: 24
+                  })
+                ],
+                alignment: AlignmentType.LEFT,
+                spacing: { after: 100 }
+              })
+            );
+          }
+
+          children.push(
+            new Paragraph({
+              children: [
+                new TextRun({ text: "________________________________________________________________________________", size: 18 })
+              ],
+              alignment: AlignmentType.LEFT,
+              spacing: { after: 200 }
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Student Population Summary Report", size: 24, bold: true })
+              ],
+              alignment: AlignmentType.CENTER
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Individual Inventory Record Form – Administrative Report", size: 24 })
+              ],
+              alignment: AlignmentType.CENTER
+            }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "This section presents the summarized data on student population based on year level, as documented in the Individual Inventory Record Form. The total number of students enrolled in each year level is as follows:", size: 24 })
+              ]
+            }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `The total number of students in First Year is ${summary['First Year']}.`, size: 24 })
+              ]
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `The total number of students in Second Year is ${summary['Second Year']}.`, size: 24 })
+              ]
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `The total number of students in Third Year is ${summary['Third Year']}.`, size: 24 })
+              ]
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `The total number of students in Fourth Year is ${summary['Fourth Year']}.`, size: 24 })
+              ]
+            }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "This report provides essential information for administrative planning, resource allocation, and student support services. All figures are based on the most recent and validated Individual Inventory Record submissions.", size: 24 })
+              ]
+            })
+          );
+
+          const doc = new Document({
+            sections: [{
+              properties: {},
+              children
+            }]
+          });
+
+          Packer.toBlob(doc).then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Student_Population_Summary_Report.docx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          });
+        }
+
+        // Try to fetch logo, fallback if error
+        fetch('PUP.png')
+          .then(res => {
+            if (!res.ok) throw new Error('Image not found');
+            return res.blob();
+          })
+          .then(blob => {
+            console.log('Logo loaded:', blob); // Add this line
+            const reader = new FileReader();
+            reader.onloadend = function () {
+              const base64Logo = reader.result.split(',')[1];
+              generateDocx(base64Logo);
+            };
+            reader.readAsDataURL(blob);
+          })
+          .catch((err) => {
+            console.error('Logo fetch error:', err);
+            generateDocx(null);
+          });
+      }
+      window.downloadSummaryReport = downloadSummaryReport;
+
+      // Filter table by search
+      function filterTable() {
+        const val = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (!val) {
+          renderTable(iirfData);
+          return;
+        }
+        const filtered = iirfData.filter(row =>
+          ((row.surname || '') + ' ' + (row.first_name || '') + ' ' + (row.middle_name || '')).toLowerCase().includes(val) ||
+          ((row['Email Address'] || row.email || '')).toLowerCase().includes(val)
+        );
+        renderTable(filtered);
+      }
+
+      function filterByYear(yearLabel) {
+        // Patterns for each year (same as in renderYearSummary)
+        const patterns = {
+          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A[^a-zA-Z]1[^a-zA-Z])\b/i,
+          'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A[^a-zA-Z]2[^a-zA-Z])\b/i,
+          'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A[^a-zA-Z]3[^a-zA-Z])\b/i,
+          'Fourth Year': /\b(fourth|4|4th|fory|yr4|year 4|4th yr|fourth year|senior|BEED 4|BEED 4th|BEED Fourth Year|BEED 4A|BEED Fourth|BPAPFM 4|BPAPFM 4th|BPAPFM Fourth Year|BPAPFM 4A|BSOA 4|BSOA 4th|BSOA Fourth Year|BSOA 4A|BSENTREP 4|BSENTREP 4th|BSENTREP Fourth Year|BSENTREP 4A|BSAM 4|BSAM 4th|BSAM Fourth Year|BSAM 4A|[^a-zA-Z]4[^a-zA-Z])\b/i
+        };
+        const filtered = iirfData.filter(row => {
+          const val = (row.course_year_section || '').toLowerCase();
+          return patterns[yearLabel].test(val);
+        });
+        renderTable(filtered);
+      }
+
+      // Initial fetch
+      fetchIIRF();
+      // Expose for inline onclick
+      window.viewDetails = viewDetails;
+      window.closeModal = closeModal;
+      window.deleteRow = deleteRow;
+      window.fetchIIRF = fetchIIRF;
+      window.filterTable = filterTable;
+      window.editRow = function(id) {
+        window.location.href = `update.html?id=${id}`;
+      };
+      async function logout() {
+        await supabase.auth.signOut();
+        sessionStorage.removeItem('iirf_admin_logged_in');
+        window.location.href = 'login.html';
+      }
+      window.logout = logout;
+
+      function renderYearSummary(data) {
+        // Patterns for each year (case-insensitive)
+        const patterns = {
+          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A[^a-zA-Z]1[^a-zA-Z])\b/i,
+          'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A[^a-zA-Z]2[^a-zA-Z])\b/i,
+          'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A[^a-zA-Z]3[^a-zA-Z])\b/i,
+          'Fourth Year': /\b(fourth|4|4th|fory|yr4|year 4|4th yr|fourth year|senior|BEED 4|BEED 4th|BEED Fourth Year|BEED 4A|BEED Fourth|BPAPFM 4|BPAPFM 4th|BPAPFM Fourth Year|BPAPFM 4A|BSOA 4|BSOA 4th|BSOA Fourth Year|BSOA 4A|BSENTREP 4|BSENTREP 4th|BSENTREP Fourth Year|BSENTREP 4A|BSAM 4|BSAM 4th|BSAM Fourth Year|BSAM 4A|[^a-zA-Z]4[^a-zA-Z])\b/i
+        };
+        const summary = {
+          'First Year': 0,
+          'Second Year': 0,
+          'Third Year': 0,
+          'Fourth Year': 0
+        };
+        data.forEach(row => {
+          const val = (row.course_year_section || '').toLowerCase();
+          if (patterns['First Year'].test(val)) summary['First Year']++;
+          else if (patterns['Second Year'].test(val)) summary['Second Year']++;
+          else if (patterns['Third Year'].test(val)) summary['Third Year']++;
+          else if (patterns['Fourth Year'].test(val)) summary['Fourth Year']++;
+        });
+        return `
+          <table class="admin-table" style="margin-bottom:1em;text-align:center;">
+            <thead>
+              <tr>
+                <th class="year-filter" data-year="First Year" style="cursor:pointer;">First Year</th>
+                <th class="year-filter" data-year="Second Year" style="cursor:pointer;">Second Year</th>
+                <th class="year-filter" data-year="Third Year" style="cursor:pointer;">Third Year</th>
+                <th class="year-filter" data-year="Fourth Year" style="cursor:pointer;">Fourth Year</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${summary['First Year']}</td>
+                <td>${summary['Second Year']}</td>
+                <td>${summary['Third Year']}</td>
+                <td>${summary['Fourth Year']}</td>
+              </tr>
+            </tbody>
+          </table>
+        `;
+      }
+
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const mainMenuList = document.getElementById('mainMenuList');
+      hamburgerBtn.addEventListener('click', function() {
+        mainMenuList.classList.toggle('open');
+      });
+      // Optional: close menu when clicking a link (for better UX)
+      mainMenuList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mainMenuList.classList.remove('open');
+        });
+      });
+    </script>
+    <svg style="display:none;">
+      <symbol id="icon-view" viewBox="0 0 16 16">
+        <path d="M8 3C3.5 3 1 8 1 8s2.5 5 7 5 7-5 7-5-2.5-5-7-5zm0 8a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+        <circle cx="8" cy="8" r="1.5"/>
+      </symbol>
+      <symbol id="icon-edit" viewBox="0 0 16 16">
+        <path d="M12.146 3.146a.5.5 0 0 1 .708 0l.707.707a.5.5 0 0 1 0 .708l-8.5 8.5a.5.5 0 0 1-.168.11l-3 1a.5.5 0 0 1-.65-.65l1-3a.5.5 0 0 1 .11-.168l8.5-8.5z"/>
+      </symbol>
+      <symbol id="icon-delete" viewBox="0 0 16 16">
+        <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+      </symbol>
+    </svg>
 </body>
+</html>
