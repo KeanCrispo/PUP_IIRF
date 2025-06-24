@@ -723,23 +723,6 @@
           children.push(
             new Paragraph({
               children: [
-                new TextRun({ text: `Date Generated: ${formattedDate}`, size: 24 })
-              ],
-              alignment: AlignmentType.LEFT,
-              spacing: { after: 50 }
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: `School Year: ${schoolYear}`, size: 24 })
-              ],
-              alignment: AlignmentType.LEFT,
-              spacing: { after: 50 }
-            })
-          );
-
-          children.push(
-            new Paragraph({
-              children: [
                 new TextRun({ text: "________________________________________________________________________________", size: 18 })
               ],
               alignment: AlignmentType.LEFT,
@@ -789,6 +772,22 @@
               children: [
                 new TextRun({ text: "This report provides essential information for administrative planning, resource allocation, and student support services. All figures are based on the most recent and validated Individual Inventory Record submissions.", size: 24 })
               ]
+            })
+          );
+          children.push(
+            new Paragraph({
+              children: [
+                new TextRun({ text: `Date Generated: ${formattedDate}`, size: 24 })
+              ],
+              alignment: AlignmentType.LEFT,
+              spacing: { after: 50 }
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `School Year: ${schoolYear}`, size: 24 })
+              ],
+              alignment: AlignmentType.LEFT,
+              spacing: { after: 50 }
             })
           );
 
