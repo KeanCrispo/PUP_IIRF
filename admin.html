@@ -725,7 +725,7 @@
               children: [
                 new TextRun({ text: "________________________________________________________________________________", size: 18 })
               ],
-              alignment: AlignmentType.LEFT,
+              alignment: AlignmentType.CENTER,
               spacing: { after: 200 }
             }),
             new Paragraph({
@@ -787,6 +787,32 @@
             new Paragraph({
               children: [
                 new TextRun({ text: `School Year: ${schoolYear}`, size: 24 })
+              ],
+              alignment: AlignmentType.LEFT,
+              spacing: { after: 50 }
+            })
+          );
+
+          children.push(
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Prepared by:", size: 24 })
+              ],
+              alignment: AlignmentType.LEFT,
+              spacing: { after: 50 }
+            }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "______________________________", size: 24 }),
+                new TextRun({ text: "(Signature Over Printed Name)", size: 12, italics: true }),
               ],
               alignment: AlignmentType.LEFT,
               spacing: { after: 50 }
