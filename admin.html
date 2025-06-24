@@ -116,6 +116,118 @@
       .main-header {
         position: relative;
       }
+      .admin-table-scroll {
+        max-width: 100%;
+        max-height: 500px; /* Adjust as needed */
+        overflow-x: auto;
+        overflow-y: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(128,0,0,0.07);
+        background: #fff;
+      }
+      nav.main-menu {
+        position: relative;
+      }
+      nav.main-menu .hamburger {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        z-index: 1001;
+      }
+      nav.main-menu .hamburger span {
+        display: block;
+        height: 4px;
+        width: 28px;
+        margin: 5px auto;
+        background: #FFD700;
+        border-radius: 2px;
+        transition: 0.3s;
+      }
+      nav.main-menu ul {
+        display: flex;
+        gap: 1em;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      nav.main-menu ul li a {
+        text-decoration: none;
+        color: #800000;
+        font-weight: bold;
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition: background 0.2s;
+      }
+      nav.main-menu ul li a.active,
+      nav.main-menu ul li a:hover {
+        background: #FFD700;
+        color: #800000;
+      }
+      @media (max-width: 700px) {
+        nav.main-menu ul {
+          display: none;
+          flex-direction: column;
+          position: absolute;
+          top: 48px;
+          left: 0;
+          width: 100vw;
+          background: #fff;
+          box-shadow: 0 2px 8px rgba(128,0,0,0.07);
+          z-index: 1000;
+        }
+        nav.main-menu ul.open {
+          display: flex;
+        }
+        nav.main-menu .hamburger {
+          display: flex;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+      .admin-filter-panel {
+        margin: 1.5em 0;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 1em;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .admin-filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
+        align-items: center;
+      }
+      .admin-filter-input {
+        padding: 8px 12px;
+        font-size: 1em;
+        border: 1px solid #bdbdbd;
+        border-radius: 4px;
+        width: 100%;
+        max-width: 250px;
+      }
+      .admin-filter-label {
+        font-weight: bold;
+        margin-right: 0.5em;
+      }
+      .admin-filter-btn {
+        padding: 8px 16px;
+        font-size: 1em;
+        background: #800000;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .admin-filter-btn:hover {
+        background: #700000;
+      }
     </style>
 </head>
 <body>
@@ -132,11 +244,16 @@
       </button>
     </header>
     <nav class="main-menu">
-      <ul>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul id="mainMenuList">
         <li><a href="index.html" class="active">INDEX</a></li>
         <li><a href="home.html">HOME</a></li>
         <li><a href="update.html">UPDATE</a></li>
-        <li><a href="#">HELP</a></li>
+        <li><a href="help.html">HELP</a></li>
       </ul>
     </nav>
     <main>
@@ -146,8 +263,19 @@
               <button onclick="fetchIIRF()">Refresh</button>
               <button onclick="downloadSummaryReport()" class="action-btn download-btn">Download Summary Report</button>
             </div>
-            <div class="admin-search">
-              <input type="text" id="searchInput" placeholder="Search by name or email..." oninput="filterTable()">
+            <div class="admin-filter-panel">
+              <div class="admin-filter-row">
+                <input type="text" id="searchInput" class="admin-filter-input" placeholder="🔍 Search by name, email, year, or date..." oninput="filterTable()">
+                <label>
+                  <span class="admin-filter-label">Date:</span>
+                  <input type="date" id="filterDate" class="admin-filter-input" onchange="filterByDateOrYear()">
+                </label>
+                <label>
+                  <span class="admin-filter-label">Year:</span>
+                  <input type="number" id="filterYear" class="admin-filter-input" min="2000" max="2100" placeholder="e.g. 2025" onchange="filterByDateOrYear()">
+                </label>
+                <button class="admin-filter-btn" onclick="clearDateYearFilter()">Clear</button>
+              </div>
             </div>
             <div id="adminTableContainer">
               <p>Loading data...</p>
@@ -227,7 +355,18 @@
             <div id="modalContent"></div>
           </div>
         </div>`;
-        document.getElementById('adminTableContainer').innerHTML = html;
+        document.getElementById('adminTableContainer').innerHTML = `
+          <div class="admin-table-scroll">
+            ${html}
+          </div>
+        `;
+
+        // Add event listeners for year filter
+        document.querySelectorAll('.year-filter').forEach(th => {
+          th.addEventListener('click', function() {
+            filterByYear(this.getAttribute('data-year'));
+          });
+        });
       }
 
       // View details modal
@@ -642,6 +781,53 @@
         renderTable(filtered);
       }
 
+      function filterByYear(yearLabel) {
+        // Patterns for each year (same as in renderYearSummary)
+        const patterns = {
+          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A[^a-zA-Z]1[^a-zA-Z])\b/i,
+          'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A[^a-zA-Z]2[^a-zA-Z])\b/i,
+          'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A[^a-zA-Z]3[^a-zA-Z])\b/i,
+          'Fourth Year': /\b(fourth|4|4th|fory|yr4|year 4|4th yr|fourth year|senior|BEED 4|BEED 4th|BEED Fourth Year|BEED 4A|BEED Fourth|BPAPFM 4|BPAPFM 4th|BPAPFM Fourth Year|BPAPFM 4A|BSOA 4|BSOA 4th|BSOA Fourth Year|BSOA 4A|BSENTREP 4|BSENTREP 4th|BSENTREP Fourth Year|BSENTREP 4A|BSAM 4|BSAM 4th|BSAM Fourth Year|BSAM 4A|[^a-zA-Z]4[^a-zA-Z])\b/i
+        };
+        const filtered = iirfData.filter(row => {
+          const val = (row.course_year_section || '').toLowerCase();
+          return patterns[yearLabel].test(val);
+        });
+        renderTable(filtered);
+      }
+
+      // Filter by date or year
+      function filterByDateOrYear() {
+        const dateVal = document.getElementById('filterDate').value;
+        const yearVal = document.getElementById('filterYear').value;
+        let filtered = iirfData;
+
+        if (dateVal) {
+          filtered = filtered.filter(row => {
+            if (!row.created_at) return false;
+            const rowDate = new Date(row.created_at);
+            // Format as yyyy-mm-dd for comparison
+            const rowDateStr = rowDate.toISOString().slice(0, 10);
+            return rowDateStr === dateVal;
+          });
+        } else if (yearVal) {
+          filtered = filtered.filter(row => {
+            if (!row.created_at) return false;
+            const rowYear = new Date(row.created_at).getFullYear();
+            return rowYear == yearVal;
+          });
+        }
+
+        renderTable(filtered);
+      }
+
+      // Clear date and year filters
+      function clearDateYearFilter() {
+        document.getElementById('filterDate').value = '';
+        document.getElementById('filterYear').value = '';
+        renderTable(iirfData);
+      }
+
       // Initial fetch
       fetchIIRF();
       // Expose for inline onclick
@@ -685,10 +871,10 @@
           <table class="admin-table" style="margin-bottom:1em;text-align:center;">
             <thead>
               <tr>
-                <th>First Year</th>
-                <th>Second Year</th>
-                <th>Third Year</th>
-                <th>Fourth Year</th>
+                <th class="year-filter" data-year="First Year" style="cursor:pointer;">First Year</th>
+                <th class="year-filter" data-year="Second Year" style="cursor:pointer;">Second Year</th>
+                <th class="year-filter" data-year="Third Year" style="cursor:pointer;">Third Year</th>
+                <th class="year-filter" data-year="Fourth Year" style="cursor:pointer;">Fourth Year</th>
               </tr>
             </thead>
             <tbody>
@@ -702,6 +888,18 @@
           </table>
         `;
       }
+
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const mainMenuList = document.getElementById('mainMenuList');
+      hamburgerBtn.addEventListener('click', function() {
+        mainMenuList.classList.toggle('open');
+      });
+      // Optional: close menu when clicking a link (for better UX)
+      mainMenuList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mainMenuList.classList.remove('open');
+        });
+      });
     </script>
     <svg style="display:none;">
       <symbol id="icon-view" viewBox="0 0 16 16">
