@@ -228,6 +228,17 @@
             <div class="admin-search">
               <input type="text" id="searchInput" placeholder="Search by name or email..." oninput="filterTable()">
             </div>
+            <div class="admin-date-filter" style="margin-bottom:1em; display:flex; gap:1em; align-items:center;">
+              <label>
+                Filter by Date:
+                <input type="date" id="filterDate" onchange="filterByDateOrYear()">
+              </label>
+              <label>
+                Filter by Year:
+                <input type="number" id="filterYear" min="2000" max="2100" placeholder="e.g. 2025" onchange="filterByDateOrYear()">
+              </label>
+              <button onclick="clearDateYearFilter()">Clear</button>
+            </div>
             <div id="adminTableContainer">
               <p>Loading data...</p>
             </div>
@@ -745,6 +756,38 @@
           return patterns[yearLabel].test(val);
         });
         renderTable(filtered);
+      }
+
+      // Filter by date or year
+      function filterByDateOrYear() {
+        const dateVal = document.getElementById('filterDate').value;
+        const yearVal = document.getElementById('filterYear').value;
+        let filtered = iirfData;
+
+        if (dateVal) {
+          filtered = filtered.filter(row => {
+            if (!row.created_at) return false;
+            const rowDate = new Date(row.created_at);
+            // Format as yyyy-mm-dd for comparison
+            const rowDateStr = rowDate.toISOString().slice(0, 10);
+            return rowDateStr === dateVal;
+          });
+        } else if (yearVal) {
+          filtered = filtered.filter(row => {
+            if (!row.created_at) return false;
+            const rowYear = new Date(row.created_at).getFullYear();
+            return rowYear == yearVal;
+          });
+        }
+
+        renderTable(filtered);
+      }
+
+      // Clear date and year filters
+      function clearDateYearFilter() {
+        document.getElementById('filterDate').value = '';
+        document.getElementById('filterYear').value = '';
+        renderTable(iirfData);
       }
 
       // Initial fetch
