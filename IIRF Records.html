@@ -221,26 +221,46 @@ html += `</tbody></table>
         renderTable(filtered);
       }
 
-      // View details modal
-      function viewDetails(id) {
-  const row = iirfData.find(r => r.id === id);
-  if (!row) return;
+      let selectedRowForSecurity = null;
 
-  // Ask for birth date as security question
-  const answer = prompt("For privacy, please enter your Date of Birth (YYYY-MM-DD):");
-  if (!answer) return;
-  // Accept both exact and localized date string
-  const normalizedInput = answer.trim().toLowerCase();
-  const normalizedData = (row.birth_date || '').trim().toLowerCase();
-  if (normalizedInput !== normalizedData) {
-    alert("Sorry, the information does not match our records.");
+function viewDetails(id) {
+  selectedRowForSecurity = iirfData.find(r => r.id === id);
+  if (!selectedRowForSecurity) return;
+  document.getElementById('securityInput').value = '';
+  document.getElementById('securityError').style.display = 'none';
+  document.getElementById('securityModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('securityInput').focus(), 100);
+}
+
+function closeSecurityModal() {
+  document.getElementById('securityModal').style.display = 'none';
+  // Do NOT reset selectedRowForSecurity here!
+}
+
+function submitSecurityAnswer() {
+  const input = document.getElementById('securityInput').value.trim();
+  const errorDiv = document.getElementById('securityError');
+  if (!input) {
+    errorDiv.textContent = "Please enter your date of birth (YYYY-MM-DD).";
+    errorDiv.style.display = 'block';
     return;
   }
+  // Compare only the date part (first 10 chars)
+  const normalizedInput = input.slice(0, 10);
+  const normalizedData = (selectedRowForSecurity.birth_date || '').slice(0, 10);
+  if (normalizedInput !== normalizedData) {
+    errorDiv.textContent = "Sorry, the information does not match our records.";
+    errorDiv.style.display = 'block';
+    return;
+  }
+  closeSecurityModal();
+  showDetailsModal(selectedRowForSecurity);
+}
 
+function showDetailsModal(row) {
   function tr(label, value) {
     return `<tr><th style="text-align:left;background:#f5f5f5;">${label}</th><td>${value ? value : '—'}</td></tr>`;
   }
-
   let html = `<h3>Submission Details</h3>
   <table style="width:100%;border-collapse:collapse;">
     <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">I. Personal Information</th></tr>
@@ -365,10 +385,6 @@ html += `</tbody></table>
   document.getElementById('detailsModal').style.display = 'flex';
 }
 
-      function closeModal() {
-        document.getElementById('detailsModal').style.display = 'none';
-      }
-
       // Initial fetch
       fetchIIRF();
       // Expose for inline onclick
@@ -399,5 +415,24 @@ html += `</tbody></table>
         <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
       </symbol>
     </svg>
-</body>
+    <!-- Security Question Modal -->
+<div id="securityModal" style="display:none; position:fixed; top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:2000;">
+  <div style="background:#fffbe7;max-width:350px;width:90vw;padding:2em 1.5em 1.5em 1.5em;border-radius:12px;box-shadow:0 2px 16px rgba(128,0,0,0.13);position:relative;">
+    <button onclick="closeSecurityModal()" style="position:absolute;top:8px;right:12px;font-size:1.2em;background:none;border:none;color:#800000;cursor:pointer;">&times;</button>
+    <h3 style="margin-top:0;color:#800000;">Security Check</h3>
+    <p style="margin-bottom:1em;">For privacy, please enter your <b>Date of Birth</b> (YYYY-MM-DD):</p>
+    <input type="date" id="securityInput" class="admin-filter-input" style="width:100%;margin-bottom:1em;" min="1900-01-01" max="2099-12-31">
+    <div id="securityError" style="color:#b00;font-size:0.95em;display:none;margin-bottom:0.5em;"></div>
+    <button onclick="submitSecurityAnswer()" style="background:#800000;color:#FFD700;padding:0.6em 1.2em;border:none;border-radius:6px;font-size:1em;cursor:pointer;width:100%;">Submit</button>
+  </div>
+</div>
+
+<!-- Details Modal (add this block) -->
+<div id="detailsModal" style="display:none; position:fixed; top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1000;">
+  <div style="background:#fff;max-width:700px;width:90vw;max-height:90vh;overflow:auto;padding:2em;position:relative;">
+    <button onclick="closeModal()" style="position:absolute;top:8px;right:12px;font-size:1.2em;">&times;</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+  </body>
 </html>
