@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PUP_IIRF - Individual Inventory Record Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather:700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+  body {
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Merriweather', serif;
+    background: url('PUP MULANAY.jpg') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+      }
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5em;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(128,0,0,0.07);
+      }
+      .admin-table th, .admin-table td {
+        border: 1px solid #bdbdbd;
+        padding: 8px 12px;
+        font-size: 1em;
+      }
+      .admin-table th {
+        background: #800000;
+        color: #FFD700;
+      }
+      .admin-table tbody tr:nth-child(even) {
+        background: #f9f3e6;
+      }
+      .admin-table tbody tr:nth-child(odd) {
+        background: #fff7ed;
+      }
+      .admin-table thead {
+        border-bottom: 2px solid #800000;
+      }
+      .admin-table-scroll {
+        max-width: 100%;
+        max-height: 500px;
+        overflow-x: auto;
+        overflow-y: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(128,0,0,0.07);
+        background: #fff;
+      }
+      .admin-filter-panel {
+        background: #fffbe7;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(128,0,0,0.08);
+        padding: 1.2em 1.5em 1em 1.5em;
+        margin-bottom: 1.5em;
+        border: 2px solid #FFD700;
+        max-width: 900px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .admin-filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .admin-filter-input {
+        padding: 7px 12px;
+        border: 1px solid #FFD700;
+        border-radius: 6px;
+        font-size: 1em;
+        background: #fff;
+        margin-right: 0.5em;
+        min-width: 160px;
+        transition: border 0.2s;
+        box-sizing: border-box;
+      }
+      .admin-filter-input:focus {
+        outline: none;
+        border-color: #800000;
+      }
+      @media (max-width: 700px) {
+        .admin-filter-panel {
+          padding: 1em 0.7em 0.7em 0.7em;
+          max-width: 100vw;
+          width: 100vw;
+          min-width: 0;
+        }
+        .admin-filter-row {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.7em;
+        }
+        .admin-filter-input {
+          min-width: 0;
+          width: 100%;
+          margin-right: 0;
+        }
+      }
+      .main-menu {
+  background: #FFD700;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+    </style>
+</head>
+<header class="main-header">
+    <div class="logo-circle">
+      <img src="PUP.png" alt="PUP Logo" class="logo left-logo">
+    </div>
+    <div class="header-content">
+      <h1>IIRF Records</h1>
+      <div class="gold-line"></div>
+    </div>
+  </header>
+  <nav class="main-menu">
+    <ul>
+      <li><a href="home.html">HOME</a></li>
+      <li><a href="update.html">UPDATE</a></li>
+      <li><a href="help.html" class="active">HELP</a></li>
+    </ul>
+  </nav>
+<body>
+    <main>
+        <section class="main-card">
+            <div class="admin-filter-panel">
+              <div class="admin-filter-row">
+                <input type="text" id="searchInput" class="admin-filter-input" placeholder="🔍 Search by name or email" oninput="filterTable()">
+              </div>
+            </div>
+            <div id="adminTableContainer">
+              <p>Loading data...</p>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      // Initialize Supabase
+      const supabase = window.supabase.createClient('https://npyyaoddrquxwvkliupl.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0');
+      let iirfData = [];
+
+      // Fetch all IIRF form submissions
+      async function fetchIIRF() {
+        document.getElementById('adminTableContainer').innerHTML = '<p>Loading data...</p>';
+        const { data, error } = await supabase.from('iirf_forms').select('*').order('id', { ascending: false });
+        if (error) {
+          document.getElementById('adminTableContainer').innerHTML = '<p style="color:red;">Error loading data: ' + error.message + '</p>';
+          return;
+        }
+        iirfData = data;
+        renderTable([]); // Show empty table after loading data
+      }
+
+      // Render the table of submissions
+      function renderTable(data) {
+        if (!data.length) {
+          document.getElementById('adminTableContainer').innerHTML = '<p>Please search for your name or email.</p>';
+          return;
+        }
+        let html = `<table class="admin-table" id="adminTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Course/Section</th>
+      <th>Age</th>
+      <th>Father Name</th>
+      <th>Date Submitted</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>`;
+for (const row of data) {
+  html += `<tr data-id="${row.id}">
+    <td>${row.id || ''}</td>
+    <td>${row.surname || ''}, ${row.first_name || ''} ${row.middle_name || ''}</td>
+    <td>${row['Email Address'] || row.email || ''}</td>
+    <td>${row['Course, Year and Section'] || row.course_year_section || ''}</td>
+    <td>${row.age || ''}</td>
+    <td>${row.father_name || ''}</td>
+    <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
+    <td>
+      <button onclick="viewDetails('${row.id}')">View</button>
+    </td>
+  </tr>`;
+}
+html += `</tbody></table>
+<div id="detailsModal" style="display:none; position:fixed; top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1000;">
+  <div style="background:#fff;max-width:700px;width:90vw;max-height:90vh;overflow:auto;padding:2em;position:relative;">
+    <button onclick="closeModal()" style="position:absolute;top:8px;right:12px;font-size:1.2em;">&times;</button>
+    <div id="modalContent"></div>
+  </div>
+</div>`;
+        document.getElementById('adminTableContainer').innerHTML = `
+          <div class="admin-table-scroll">
+            ${html}
+          </div>
+        `;
+      }
+
+      // Filter table by search
+      function filterTable() {
+        const val = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (!val) {
+          renderTable([]); // Show empty table if search is empty
+          return;
+        }
+        const filtered = iirfData.filter(row =>
+          ((row.surname || '') + ' ' + (row.first_name || '') + ' ' + (row.middle_name || '')).toLowerCase().includes(val) ||
+          ((row['Email Address'] || row.email || '')).toLowerCase().includes(val)
+        );
+        renderTable(filtered);
+      }
+
+      // View details modal
+      function viewDetails(id) {
+  const row = iirfData.find(r => r.id === id);
+  if (!row) return;
+
+  // Ask for birth date as security question
+  const answer = prompt("For privacy, please enter your Date of Birth (YYYY-MM-DD):");
+  if (!answer) return;
+  // Accept both exact and localized date string
+  const normalizedInput = answer.trim().toLowerCase();
+  const normalizedData = (row.birth_date || '').trim().toLowerCase();
+  if (normalizedInput !== normalizedData) {
+    alert("Sorry, the information does not match our records.");
+    return;
+  }
+
+  function tr(label, value) {
+    return `<tr><th style="text-align:left;background:#f5f5f5;">${label}</th><td>${value ? value : '—'}</td></tr>`;
+  }
+
+  let html = `<h3>Submission Details</h3>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">I. Personal Information</th></tr>
+    ${tr('Surname', row.surname)}
+    ${tr('First Name', row.first_name)}
+    ${tr('Middle Name', row.middle_name)}
+    ${tr('Gender', row.gender)}
+    ${tr('Age', row.age)}
+    ${tr('Civil Status', row.civil_status)}
+    ${tr('Course, Year and Section', row.course_year_section)}
+    ${tr('Height', row.height)}
+    ${tr('Weight', row.weight)}
+    ${tr('Complexion', row.complexion)}
+    ${tr('Date of Birth', row.birth_date)}
+    ${tr('Place of Birth', row.birth_place)}
+    ${tr('City Address', row.city_address)}
+    ${tr('Provincial Address', row.provincial_address)}
+    ${tr('Email Address', row.email)}
+    ${tr('Telephone No.', row.telephone)}
+    ${tr('Mobile No.', row.mobile)}
+    ${tr('High School General Average', row.hs_general_average)}
+    ${tr('Religion', row.religion)}
+    ${tr('If working, employer name/address', row.working_employer)}
+    ${tr('Person to contact in case of emergency', row.emergency_contact_name)}
+    ${tr('Relationship', row.emergency_contact_relationship)}
+    ${tr('Contact Number', row.emergency_contact_number)}
+
+    <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">II. Educational Background</th></tr>
+    ${tr('Pre-elementary School', row.pre_elem_school)}
+    ${tr('Pre-elementary Address', row.pre_elem_address)}
+    ${tr('Pre-elementary Type', row.pre_elem_type)}
+    ${tr('Pre-elementary Dates', row.pre_elem_dates)}
+    ${tr('Pre-elementary Honors', row.pre_elem_honors)}
+    ${tr('Elementary School', row.elem_school)}
+    ${tr('Elementary Address', row.elem_address)}
+    ${tr('Elementary Type', row.elem_type)}
+    ${tr('Elementary Dates', row.elem_dates)}
+    ${tr('Elementary Honors', row.elem_honors)}
+    ${tr('High School', row.hs_school)}
+    ${tr('High School Address', row.hs_address)}
+    ${tr('High School Type', row.hs_type)}
+    ${tr('High School Dates', row.hs_dates)}
+    ${tr('High School Honors', row.hs_honors)}
+    ${tr('Vocational School', row.vocational_school)}
+    ${tr('Vocational Address', row.vocational_address)}
+    ${tr('Vocational Type', row.vocational_type)}
+    ${tr('Vocational Dates', row.vocational_dates)}
+    ${tr('Vocational Honors', row.vocational_honors)}
+    ${tr('College School', row.college_school)}
+    ${tr('College Address', row.college_address)}
+    ${tr('College Type', row.college_type)}
+    ${tr('College Dates', row.college_dates)}
+    ${tr('College Honors', row.college_honors)}
+    ${tr('Nature of Schooling', (row.schooling_continuous ? 'Continuous ' : '') + (row.schooling_interrupted ? 'Interrupted' : ''))}
+    ${tr('If interrupted, why?', row.schooling_interrupted_why)}
+
+    <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">III. Home and Family Background</th></tr>
+    ${tr('Father Name', row.father_name)}
+    ${tr('Father Age', row.father_age)}
+    ${tr('Father Living', row.father_living ? 'Yes' : row.father_deceased ? 'Deceased' : '')}
+    ${tr('Father Educational Attainment', row.father_educ_attain)}
+    ${tr('Father Occupation', row.father_occupation)}
+    ${tr('Father Employer', row.father_employer)}
+    ${tr('Father Employer Address', row.father_employer_address)}
+    ${tr('Mother Name', row.mother_name)}
+    ${tr('Mother Age', row.mother_age)}
+    ${tr('Mother Living', row.mother_living ? 'Yes' : row.mother_deceased ? 'Deceased' : '')}
+    ${tr('Mother Educational Attainment', row.mother_educ_attain)}
+    ${tr('Mother Occupation', row.mother_occupation)}
+    ${tr('Mother Employer', row.mother_employer)}
+    ${tr('Mother Employer Address', row.mother_employer_address)}
+    ${tr('Guardian Name', row.guardian_name)}
+    ${tr('Guardian Age', row.guardian_age)}
+    ${tr('Guardian Relation', row.guardian_relation)}
+    ${tr('Guardian Educational Attainment', row.guardian_educ_attain)}
+    ${tr('Guardian Occupation', row.guardian_occupation)}
+    ${tr('Guardian Employer', row.guardian_employer)}
+    ${tr('Guardian Employer Address', row.guardian_employer_address)}
+    ${tr('Parents\' Marital Relationship', 
+      row.parents_marital_married_together ? 'Married and staying together' :
+      row.parents_marital_not_married_together ? 'Not Married but Living Together' :
+      row.parents_marital_single_parent ? 'Single Parent' :
+      row.parents_marital_married_separated ? 'Married but Separated' :
+      row.parents_marital_other ? 'Other: ' + (row.parents_marital_other_specify || '') : ''
+    )}
+    ${tr('Number of children in the family', row.num_children)}
+    ${tr('Number of Brothers', row.num_brothers)}
+    ${tr('Number of Sisters', row.num_sisters)}
+    ${tr('Number of siblings employed', row.num_siblings_employed)}
+    ${tr('Ordinal Position', row.ordinal_position)}
+    ${tr('Sibling support', 
+      (row.sibling_support_family ? 'Family ' : '') +
+      (row.sibling_support_studies ? 'Your studies ' : '') +
+      (row.sibling_support_own_family ? 'His/her own family' : '')
+    )}
+    ${tr('Who finances your schooling', 
+      (row.finances_parents ? 'Parents ' : '') +
+      (row.finances_spouse ? 'Spouse ' : '') +
+      (row.finances_relatives ? 'Relatives ' : '') +
+      (row.finances_brother_sister ? 'Brother/Sister ' : '') +
+      (row.finances_scholarship ? 'Scholarship ' : '') +
+      (row.finances_self_supporting ? 'Self-supporting/working student' : '')
+    )}
+    ${tr('Parents\' Total Monthly Income', row.income)}
+    ${tr('Other Income', row.income_others)}
+    ${tr('Do you have a quiet place to study?', row.quiet_place)}
+    ${tr('Do you share your room with anyone?', row.share_room)}
+    ${tr('If yes, with whom?', row.share_room_with)}
+    ${tr('Nature of Residence', row.residence)}
+
+    <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">Signature</th></tr>
+    <tr>
+      <td colspan="2" style="text-align:center;">
+        ${row.signature ? `<img src="${row.signature}" alt="Signature" style="max-width:350px;max-height:120px;border:1px solid #ccc;border-radius:6px;background:#fff;">` : '—'}
+      </td>
+    </tr>
+    <tr><th colspan="2" style="background:#f5f5f5;">Submitted At</th></tr>
+    <tr><td colspan="2">${row.created_at ? new Date(row.created_at).toLocaleString() : '—'}</td></tr>
+  </table>`;
+
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('detailsModal').style.display = 'flex';
+}
+
+      function closeModal() {
+        document.getElementById('detailsModal').style.display = 'none';
+      }
+
+      // Initial fetch
+      fetchIIRF();
+      // Expose for inline onclick
+      window.viewDetails = viewDetails;
+      window.closeModal = closeModal;
+      window.deleteRow = deleteRow;
+      window.fetchIIRF = fetchIIRF;
+      window.filterTable = filterTable;
+      window.editRow = function(id) {
+        window.location.href = `update.html?id=${id}`;
+      };
+      async function logout() {
+        await supabase.auth.signOut();
+        sessionStorage.removeItem('iirf_admin_logged_in');
+        window.location.href = 'login.html';
+      }
+      window.logout = logout;
+    </script>
+    <svg style="display:none;">
+      <symbol id="icon-view" viewBox="0 0 16 16">
+        <path d="M8 3C3.5 3 1 8 1 8s2.5 5 7 5 7-5 7-5-2.5-5-7-5zm0 8a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+        <circle cx="8" cy="8" r="1.5"/>
+      </symbol>
+      <symbol id="icon-edit" viewBox="0 0 16 16">
+        <path d="M12.146 3.146a.5.5 0 0 1 .708 0l.707.707a.5.5 0 0 1 0 .708l-8.5 8.5a.5.5 0 0 1-.168.11l-3 1a.5.5 0 0 1-.65-.65l1-3a.5.5 0 0 1 .11-.168l8.5-8.5z"/>
+      </symbol>
+      <symbol id="icon-delete" viewBox="0 0 16 16">
+        <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+      </symbol>
+    </svg>
+</body>
+</html>
