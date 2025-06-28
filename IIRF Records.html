@@ -196,7 +196,7 @@ for (const row of data) {
 html += `</tbody></table>
 <div id="detailsModal" style="display:none; position:fixed; top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1000;">
   <div style="background:#fff;max-width:700px;width:90vw;max-height:90vh;overflow:auto;padding:2em;position:relative;">
-    <button onclick="closeModal()" style="position:absolute;top:8px;right:12px;font-size:1.2em;">&times;</button>
+    <button onclick="closeDetailsModal()" style="position:absolute;top:8px;right:12px;font-size:2.5em;font-weight:bold;background:none;border:none;color:#800000;cursor:pointer;">&times;</button>
     <div id="modalContent"></div>
   </div>
 </div>`;
@@ -389,7 +389,6 @@ function showDetailsModal(row) {
       fetchIIRF();
       // Expose for inline onclick
       window.viewDetails = viewDetails;
-      window.closeModal = closeModal;
       window.deleteRow = deleteRow;
       window.fetchIIRF = fetchIIRF;
       window.filterTable = filterTable;
@@ -402,6 +401,10 @@ function showDetailsModal(row) {
         window.location.href = 'login.html';
       }
       window.logout = logout;
+
+      function closeDetailsModal() {
+  document.getElementById('detailsModal').style.display = 'none';
+}
     </script>
     <svg style="display:none;">
       <symbol id="icon-view" viewBox="0 0 16 16">
@@ -420,17 +423,17 @@ function showDetailsModal(row) {
   <div style="background:#fffbe7;max-width:350px;width:90vw;padding:2em 1.5em 1.5em 1.5em;border-radius:12px;box-shadow:0 2px 16px rgba(128,0,0,0.13);position:relative;">
     <button onclick="closeSecurityModal()" style="position:absolute;top:8px;right:12px;font-size:1.2em;background:none;border:none;color:#800000;cursor:pointer;">&times;</button>
     <h3 style="margin-top:0;color:#800000;">Security Check</h3>
-    <p style="margin-bottom:1em;">For privacy, please enter your <b>Date of Birth</b> (YYYY-MM-DD):</p>
+    <p style="margin-bottom:1em;">For privacy, please enter your <b>Date of Birth</b> (DD-MM-YYYY):</p>
     <input type="date" id="securityInput" class="admin-filter-input" style="width:100%;margin-bottom:1em;" min="1900-01-01" max="2099-12-31">
     <div id="securityError" style="color:#b00;font-size:0.95em;display:none;margin-bottom:0.5em;"></div>
     <button onclick="submitSecurityAnswer()" style="background:#800000;color:#FFD700;padding:0.6em 1.2em;border:none;border-radius:6px;font-size:1em;cursor:pointer;width:100%;">Submit</button>
   </div>
 </div>
 
-<!-- Details Modal (add this block) -->
+<!-- Details Modal (add the X button) -->
 <div id="detailsModal" style="display:none; position:fixed; top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1000;">
   <div style="background:#fff;max-width:700px;width:90vw;max-height:90vh;overflow:auto;padding:2em;position:relative;">
-    <button onclick="closeModal()" style="position:absolute;top:8px;right:12px;font-size:1.2em;">&times;</button>
+    <button onclick="closeDetailsModal()" style="position:absolute;top:8px;right:12px;font-size:2.5em;font-weight:bold;background:none;border:none;color:#800000;cursor:pointer;">&times;</button>
     <div id="modalContent"></div>
   </div>
 </div>
