@@ -367,7 +367,7 @@
     // Check for a record with BOTH email and course_year_section
     const { data: existing, error: selectError } = await supabase
       .from('iirf_forms')
-      .select('id')
+      .select('*')
       .eq('email', email)
       .eq('course_year_section', courseYearSection)
       .single();
@@ -376,6 +376,22 @@
       alert('Error checking record: ' + selectError.message);
       return;
     }
+
+    // List of fields to copy if adding a new record
+    const fieldsToCopy = [
+      'pre_elementary_school', 'pre_elementary_address', 'pre_elementary_type', 'pre_elementary_dates', 'pre_elementary_honors',
+      'elementary_school', 'elementary_address', 'elementary_type', 'elementary_dates', 'elementary_honors',
+      'high_school', 'high_school_address', 'high_school_type', 'high_school_dates', 'high_school_honors',
+      'vocational_school', 'vocational_address', 'vocational_type', 'vocational_dates', 'vocational_honors',
+      'college_school', 'college_address', 'college_type', 'college_dates', 'college_honors',
+      'nature_of_schooling', 'if_interrupted_why',
+      'father_name', 'father_age', 'father_living', 'father_educational_attainment', 'father_occupation', 'father_employer', 'father_employer_address',
+      'mother_name', 'mother_age', 'mother_living', 'mother_educational_attainment', 'mother_occupation', 'mother_employer', 'mother_employer_address',
+      'guardian_name', 'guardian_age', 'guardian_relation', 'guardian_educational_attainment', 'guardian_occupation', 'guardian_employer', 'guardian_employer_address',
+      'parents_marital_relationship', 'number_of_children', 'number_of_brothers', 'number_of_sisters', 'number_of_siblings_employed',
+      'ordinal_position', 'sibling_support', 'who_finances_schooling', 'parents_total_monthly_income', 'other_income',
+      'quiet_place_to_study', 'share_room', 'share_room_with', 'nature_of_residence'
+    ];
 
     if (existing && existing.id) {
       // Update the existing record
@@ -389,6 +405,24 @@
         alert('Form updated successfully!');
       }
     } else {
+      // Try to find an existing record to copy details from (by email only)
+      const { data: prev, error: prevError } = await supabase
+        .from('iirf_forms')
+        .select('*')
+        .eq('email', email)
+        .order('id', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (prev && !prevError) {
+        // Copy the specified fields from previous record
+        fieldsToCopy.forEach(field => {
+          if (prev[field] !== undefined && prev[field] !== null && prev[field] !== '') {
+            data[field] = prev[field];
+          }
+        });
+      }
+
       // Insert as new record
       const { error: insertError } = await supabase.from('iirf_forms').insert([data]);
       if (insertError) {
