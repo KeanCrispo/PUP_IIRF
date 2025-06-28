@@ -293,7 +293,7 @@
         <li><a href="home.html">HOME</a></li>
         <li><a href="update.html">UPDATE</a></li>
         <li><a href="help.html">HELP</a></li>
-        <li><a href="IIRF Records.html" class="active">IIRF Records</a></li>
+        <li><a href="IIRF Records.html" class="active">View Your Data</a></li>
       </ul>
     </nav>
     <main>
@@ -302,6 +302,7 @@
               <h2>Manage IIRF Submissions</h2>
               <button onclick="fetchIIRF()">Refresh</button>
               <button onclick="downloadSummaryReport()" class="action-btn download-btn">Download Summary Report</button>
+              <button onclick="downloadAllRecords()" class="action-btn download-btn">Download All Records (CSV)</button>
             </div>
             <div class="admin-filter-panel">
               <div class="admin-filter-row">
@@ -867,6 +868,41 @@
           });
       }
       window.downloadSummaryReport = downloadSummaryReport;
+
+      // Download all records as CSV
+      function downloadAllRecords() {
+        if (!iirfData.length) {
+          alert('No records to download!');
+          return;
+        }
+        // Get all unique keys from all records
+        const allKeys = Array.from(
+          iirfData.reduce((set, row) => {
+            Object.keys(row).forEach(k => set.add(k));
+            return set;
+          }, new Set())
+        );
+        // CSV header
+        let csv = allKeys.join(',') + '\n';
+        // CSV rows
+        iirfData.forEach(row => {
+          csv += allKeys.map(k => `"${(row[k] ?? '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
+        });
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'iirf_all_records.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+      window.downloadAllRecords = downloadAllRecords;
+
+      // Initial fetch after DOM is ready
+      document.addEventListener('DOMContentLoaded', fetchIIRF);
 
       // Filter table by search
       function filterTable() {
