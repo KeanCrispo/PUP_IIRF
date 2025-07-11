@@ -715,6 +715,14 @@
   <canvas id="signature-pad" width="350" height="120" style="border:1px solid #ccc; background:#fff; border-radius:6px; margin-bottom:8px;display:block;"></canvas>
   <button type="button" id="clear-signature" style="width:350px;display:block;margin-bottom:8px;">Clear Signature</button>
   <input type="hidden" name="signature" id="signature-data">
+
+  <!-- Add this inside your <form class="iirf-form"> ... -->
+<div class="form-row" style="flex-direction:column;align-items:flex-start;margin-bottom:20px;">
+  <label for="photo-upload"><b>Signature Photo:</b></label>
+  <input type="file" id="photo-upload" accept="image/*">
+  <img id="photo-preview" src="" alt="Photo Preview" style="display:none;max-width:150px;margin-top:8px;border-radius:8px;">
+  <input type="hidden" name="photo" id="photo-data">
+</div>
 </div>
 <div class="form-row" style="justify-content:center;">
   <button type="submit" style="padding:10px 32px;font-size:1.1em;background:#800000;color:#FFD700;border:none;border-radius:8px;cursor:pointer;">
@@ -1051,6 +1059,20 @@ canvas.addEventListener('touchend', function(e) {
 canvas.addEventListener('touchcancel', function(e) {
   e.preventDefault();
   drawing = false;
+});
+</script>
+<script>
+// Photo upload to base64
+document.getElementById('photo-upload').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    document.getElementById('photo-data').value = evt.target.result; // base64 string
+    document.getElementById('photo-preview').src = evt.target.result;
+    document.getElementById('photo-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
 });
 </script>
 </body>
