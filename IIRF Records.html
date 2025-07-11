@@ -378,6 +378,13 @@ function showDetailsModal(row) {
         ${row.signature ? `<img src="${row.signature}" alt="Signature" style="max-width:350px;max-height:120px;border:1px solid #ccc;border-radius:6px;background:#fff;">` : '—'}
       </td>
     </tr>
+<tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">Photo</th></tr>
+<tr>
+  <td colspan="2" style="text-align:center;">
+    ${row.photo ? `<img src="${row.photo}" alt="Photo" style="max-width:150px;max-height:180px;border:1px solid #ccc;border-radius:8px;background:#fff;">` : '—'}
+  </td>
+</tr>
+
     <tr><th colspan="2" style="background:#f5f5f5;">Submitted At</th></tr>
     <tr><td colspan="2">${row.created_at ? new Date(row.created_at).toLocaleString() : '—'}</td></tr>
   </table>`;
