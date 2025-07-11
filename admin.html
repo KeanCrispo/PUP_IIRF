@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PUP_IIRF Admin Dashboard</title>
-    <link rel="icon" type="image/png" href="PUP.png">
     <link rel="stylesheet" href="style.css">
     <style>
       *,
@@ -386,7 +385,13 @@
               <button class="action-btn view-btn" onclick="viewDetails('${row.id}')">View</button>
               <button class="action-btn edit-btn" onclick="editRow('${row.id}')">Edit</button>
               <button class="action-btn delete-btn" onclick="deleteRow('${row.id}')">Delete</button>
-              <button class="action-btn download-btn" onclick="downloadRow('${row.id}')">Download</button>
+              <div class="download-dropdown" style="display:inline-block;position:relative;">
+    <button class="action-btn download-btn" onclick="showDownloadMenu(event, '${row.id}')">Download</button>
+    <div class="download-menu" id="download-menu-${row.id}" style="display:none;position:absolute;z-index:10;right:0;background:#fff;border:1px solid #ccc;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+      <button onclick="downloadRow('${row.id}', 'csv')" style="display:block;width:100%;border:none;background:none;padding:8px 16px;text-align:left;cursor:pointer;">CSV</button>
+      <button onclick="downloadRow('${row.id}', 'docx')" style="display:block;width:100%;border:none;background:none;padding:8px 16px;text-align:left;cursor:pointer;">DOCX</button>
+    </div>
+  </div>
             </td>
           </tr>`;
         }
@@ -537,6 +542,12 @@
               ${row.signature ? `<img src="${row.signature}" alt="Signature" style="max-width:350px;max-height:120px;border:1px solid #ccc;border-radius:6px;background:#fff;">` : '—'}
             </td>
           </tr>
+          <tr><th colspan="2" style="background:#800000;color:#FFD700;text-align:left;">Photo</th></tr>
+          <tr>
+            <td colspan="2" style="text-align:center;">
+              ${row.photo ? `<img src="${row.photo}" alt="Photo" style="max-width:150px;max-height:180px;border:1px solid #ccc;border-radius:8px;background:#fff;">` : '—'}
+            </td>
+          </tr>
           <tr><th colspan="2" style="background:#f5f5f5;">Submitted At</th></tr>
           <tr><td colspan="2">${row.created_at ? new Date(row.created_at).toLocaleString() : '—'}</td></tr>
         </table>`;
@@ -560,279 +571,277 @@
         }
       }
 
-      // Download a row as CSV
-      window.downloadRow = function(id) {
+      // Show the download menu
+      function showDownloadMenu(event, id) {
+        event.stopPropagation();
+        // Hide any open menus first
+        document.querySelectorAll('.download-menu').forEach(menu => menu.style.display = 'none');
+        const menu = document.getElementById('download-menu-' + id);
+        if (menu) menu.style.display = 'block';
+      }
+
+      // Hide menu when clicking elsewhere
+      document.addEventListener('click', function() {
+        document.querySelectorAll('.download-menu').forEach(menu => menu.style.display = 'none');
+      });
+
+      // Download row as CSV or DOCX
+      window.downloadRow = function(id, type = 'csv') {
         const row = iirfData.find(r => r.id === id);
         if (!row) return alert('Record not found!');
-        // Prepare CSV content for this row
-        const keys = Object.keys(row);
-        const csv = keys.join(',') + '\n' + keys.map(k => `"${(row[k] ?? '').toString().replace(/"/g, '""')}"`).join(',');
-        // Create a blob and trigger download
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `iirf_${row.id}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      };
+        // Compose student name for filename and header
+        const studentName = [
+          row.surname || '',
+          row.first_name || '',
+          row.middle_name || ''
+        ].join(' ').replace(/\s+/g, ' ').trim().replace(/[\\/:*?"<>|]/g, '');
 
-      // Download summary report
-      function downloadSummaryReport() {
-        const patterns = {
-          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A|DIT1|DOMT1[^a-zA-Z]1[^a-zA-Z])\b/i,
-          'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A|DIT2|DOMT2[^a-zA-Z]2[^a-zA-Z])\b/i,
-          'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A|DIT3|DOMT3[^a-zA-Z]3[^a-zA-Z])\b/i,
-          'Fourth Year': /\b(fourth|4|4th|fory|yr4|year 4|4th yr|fourth year|senior|BEED 4|BEED 4th|BEED Fourth Year|BEED 4A|BEED Fourth|BPAPFM 4|BPAPFM 4th|BPAPFM Fourth Year|BPAPFM 4A|BSOA 4|BSOA 4th|BSOA Fourth Year|BSOA 4A|BSENTREP 4|BSENTREP 4th|BSENTREP Fourth Year|BSENTREP 4A|BSAM 4|BSAM 4th|BSAM Fourth Year|BSAM 4A|[^a-zA-Z]4[^a-zA-Z])\b/i
-        };
-        const summary = {
-          'First Year': 0,
-          'Second Year': 0,
-          'Third Year': 0,
-          'Fourth Year': 0
-        };
-        iirfData.forEach(row => {
-          const val = (row.course_year_section || '').toLowerCase();
-          if (patterns['First Year'].test(val)) summary['First Year']++;
-          else if (patterns['Second Year'].test(val)) summary['Second Year']++;
-          else if (patterns['Third Year'].test(val)) summary['Third Year']++;
-          else if (patterns['Fourth Year'].test(val)) summary['Fourth Year']++;
-        });
+        if (type === 'csv') {
+          // CSV logic (same as before)
+          const keys = Object.keys(row);
+          const csv = keys.join(',') + '\n' + keys.map(k => `"${(row[k] ?? '').toString().replace(/"/g, '""')}"`).join(',');
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${studentName || 'iirf_record'}_IIRF.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } else if (type === 'docx') {
+          // DOCX logic with header and sectioned layout
+          const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, ShadingType } = window.docx;
 
-        // Helper to generate the docx
-        function generateDocx(base64Logo) {
-          const { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, WidthType } = window.docx;
-          const children = [];
-
-          // Header with logo and text in a table
-          if (base64Logo) {
-            children.push(
-              new Table({
-                rows: [
-                  new TableRow({
-                    children: [
-                      new TableCell({
-                        width: { size: 20, type: WidthType.PERCENTAGE },
-                        children: [
-                          new Paragraph({
-                            children: [
-                              new ImageRun({
-                                data: Uint8Array.from(atob(base64Logo), c => c.charCodeAt(0)),
-                                transformation: { width: 70, height: 70 }
-                              })
-                            ],
-                            alignment: AlignmentType.CENTER
-                          })
-                        ],
-                        verticalAlign: "center",
-                      }),
-                      new TableCell({
-                        width: { size: 80, type: WidthType.PERCENTAGE },
-                        children: [
-                          new Paragraph({
-                            children: [
-                              new TextRun({
-                                text: "Republic of the Philippines",
-                                bold: false,
-                                font: "Times New Roman",
-                                size: 24
-                              })
-                            ],
-                            alignment: AlignmentType.LEFT,
-                            spacing: { after: 50 }
-                          }),
-                          new Paragraph({
-                            children: [
-                              new TextRun({
-                                text: "POLYTECHNIC UNIVERSITY OF THE PHILIPPINES",
-                                bold: true,
-                                font: "Times New Roman",
-                                size: 24
-                              })
-                            ],
-                            alignment: AlignmentType.LEFT,
-                            spacing: { after: 50 }
-                          }),
-                          new Paragraph({
-                            children: [
-                              new TextRun({
-                                text: "OFFICE OF THE VICE PRESIDENT FOR BRANCHES AND CAMPUSES",
-                                bold: true,
-                                font: "Times New Roman",
-                                size: 24
-                              })
-                            ],
-                            alignment: AlignmentType.LEFT,
-                            spacing: { after: 50 }
-                          }),
-                          new Paragraph({
-                            children: [
-                              new TextRun({
-                                text: "MULANAY QUEZON BRANCH",
-                                bold: true,
-                                font: "Times New Roman",
-                                size: 24
-                              })
-                            ],
-                            alignment: AlignmentType.LEFT
-                          })
-                        ],
-                        verticalAlign: "center",
-                      })
-                    ]
-                  })
-                ],
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                margins: { top: 100, bottom: 100 },
-                borders: {
-                  top: { size: 0, color: "FFFFFF" },
-                  bottom: { size: 0, color: "FFFFFF" },
-                  left: { size: 0, color: "FFFFFF" },
-                  right: { size: 0, color: "FFFFFF" },
-                  insideHorizontal: { size: 0, color: "FFFFFF" },
-                  insideVertical: { size: 0, color: "FFFFFF" }
-                }
-              })
-            );
-          } else {
-            children.push(
-              new Paragraph({
-                children: [
-                  new TextRun({
-                    text: "Republic of the Philippines\nPOLYTECHNIC UNIVERSITY OF THE PHILIPPINES\nOFFICE OF THE VICE PRESIDENT FOR BRANCHES AND CAMPUSES\nMULANAY QUEZON BRANCH",
-                    bold: false,
-                    font: "Times New Roman",
-                    size: 24
-                  })
-                ],
-                alignment: AlignmentType.LEFT,
-                spacing: { after: 100 }
-              })
-            );
+          function sectionHeading(text) {
+            return new Paragraph({
+              children: [new TextRun({ text, bold: true, color: "FFFFFF", size: 28 })],
+              shading: { type: ShadingType.CLEAR, color: "auto", fill: "800000" },
+              spacing: { after: 100 },
+            });
+          }
+          function tr(label, value) {
+            return new TableRow({
+              children: [
+                new TableCell({
+                  children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 24 })] })],
+                  shading: { type: ShadingType.CLEAR, color: "auto", fill: "F5F5F5" },
+                  width: { size: 40, type: WidthType.PERCENTAGE },
+                }),
+                new TableCell({
+                  children: [new Paragraph({ children: [new TextRun({ text: value ? String(value) : "—", size: 24 })] })],
+                  width: { size: 60, type: WidthType.PERCENTAGE },
+                }),
+              ],
+            });
           }
 
-          // Add date and school year to the report
-          const now = new Date();
-          const options = { year: 'numeric', month: 'long', day: 'numeric' };
-          const formattedDate = now.toLocaleDateString('en-US', options);
-
-          // Compute school year (assume SY starts in June)
-          let syStart = now.getMonth() + 1 >= 6 ? now.getFullYear() : now.getFullYear() - 1;
-          let syEnd = syStart + 1;
-          const schoolYear = `${syStart}-${syEnd}`;
-
-          children.push(
+          // Header section (school name and logo placeholder)
+          const headerParagraphs = [
             new Paragraph({
               children: [
-                new TextRun({ text: "________________________________________________________________________________", size: 18 })
+                new TextRun({
+                  text: "POLYTECHNIC UNIVERSITY OF THE PHILIPPINES",
+                  bold: true,
+                  color: "800000",
+                  size: 32,
+                  font: "Arial"
+                })
+              ],
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 80 }
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Mulanay, Quezon Branch",
+                  bold: true,
+                  color: "800000",
+                  size: 28,
+                  font: "Arial"
+                })
+              ],
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 80 }
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Individual Inventory Record Form",
+                  bold: true,
+                  color: "FFD700",
+                  size: 28,
+                  font: "Arial"
+                })
               ],
               alignment: AlignmentType.CENTER,
               spacing: { after: 200 }
             }),
             new Paragraph({
               children: [
-                new TextRun({ text: "Student Population Summary Report", size: 24, bold: true })
+                new TextRun({
+                  text: studentName,
+                  bold: true,
+                  color: "000000",
+                  size: 28,
+                  font: "Arial"
+                })
               ],
-              alignment: AlignmentType.CENTER
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 200 }
             }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Individual Inventory Record Form – Administrative Report", size: 24 })
-              ],
-              alignment: AlignmentType.CENTER
-            }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "This section presents the summarized data on student population based on year level, as documented in the Individual Inventory Record Form. The total number of students enrolled in each year level is as follows:", size: 24 })
-              ]
-            }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: `The total number of students in First Year is ${summary['First Year']}.`, size: 24 })
-              ]
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: `The total number of students in Second Year is ${summary['Second Year']}.`, size: 24 })
-              ]
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: `The total number of students in Third Year is ${summary['Third Year']}.`, size: 24 })
-              ]
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: `The total number of students in Fourth Year is ${summary['Fourth Year']}.`, size: 24 })
-              ]
-            }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "This report provides essential information for administrative planning, resource allocation, and student support services. All figures are based on the most recent and validated Individual Inventory Record submissions.", size: 24 })
-              ]
-            })
-          );
+          ];
 
-          children.push(
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: `Date Generated: ${formattedDate}`, size: 24 })
-              ],
-              alignment: AlignmentType.LEFT,
-              spacing: { after: 50 }
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: `School Year: ${schoolYear}`, size: 24 })
-              ],
-              alignment: AlignmentType.LEFT,
-              spacing: { after: 50 }
-            })
-          );
+          // Section I: Personal Information
+          const personalRows = [
+            tr("Surname", row.surname),
+            tr("First Name", row.first_name),
+            tr("Middle Name", row.middle_name),
+            tr("Gender", row.gender),
+            tr("Age", row.age),
+            tr("Civil Status", row.civil_status),
+            tr("Course, Year and Section", row.course_year_section),
+            tr("Height", row.height),
+            tr("Weight", row.weight),
+            tr("Complexion", row.complexion),
+            tr("Date of Birth", row.birth_date),
+            tr("Place of Birth", row.birth_place),
+            tr("City Address", row.city_address),
+            tr("Provincial Address", row.provincial_address),
+            tr("Email Address", row.email),
+            tr("Telephone No.", row.telephone),
+            tr("Mobile No.", row.mobile),
+            tr("High School General Average", row.hs_general_average),
+            tr("Religion", row.religion),
+            tr("If working, employer name/address", row.working_employer),
+            tr("Person to contact in case of emergency", row.emergency_contact_name),
+            tr("Relationship", row.emergency_contact_relationship),
+            tr("Contact Number", row.emergency_contact_number),
+          ];
 
-          children.push(
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Prepared by:", size: 24 })
-              ],
-              alignment: AlignmentType.LEFT,
-              spacing: { after: 50 }
-            }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "______________________________", size: 24 }),
-              ],
-              alignment: AlignmentType.LEFT,
-              spacing: { after: 50 }
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "(Signature Over Printed Name)", size: 24, italics: true })
-              ],
-              alignment: AlignmentType.LEFT,
-              spacing: { after: 50 }
-            })
-          );
-          
+          // Section II: Educational Background
+          const educationRows = [
+            tr("Pre-elementary School", row.pre_elem_school),
+            tr("Pre-elementary Address", row.pre_elem_address),
+            tr("Pre-elementary Type", row.pre_elem_type),
+            tr("Pre-elementary Dates", row.pre_elem_dates),
+            tr("Pre-elementary Honors", row.pre_elem_honors),
+            tr("Elementary School", row.elem_school),
+            tr("Elementary Address", row.elem_address),
+            tr("Elementary Type", row.elem_type),
+            tr("Elementary Dates", row.elem_dates),
+            tr("Elementary Honors", row.elem_honors),
+            tr("High School", row.hs_school),
+            tr("High School Address", row.hs_address),
+            tr("High School Type", row.hs_type),
+            tr("High School Dates", row.hs_dates),
+            tr("High School Honors", row.hs_honors),
+            tr("Vocational School", row.vocational_school),
+            tr("Vocational Address", row.vocational_address),
+            tr("Vocational Type", row.vocational_type),
+            tr("Vocational Dates", row.vocational_dates),
+            tr("Vocational Honors", row.vocational_honors),
+            tr("College School", row.college_school),
+            tr("College Address", row.college_address),
+            tr("College Type", row.college_type),
+            tr("College Dates", row.college_dates),
+            tr("College Honors", row.college_honors),
+            tr("Nature of Schooling", (row.schooling_continuous ? "Continuous " : "") + (row.schooling_interrupted ? "Interrupted" : "")),
+            tr("If interrupted, why?", row.schooling_interrupted_why),
+          ];
 
+          // Section III: Home and Family Background
+          const familyRows = [
+            tr("Father Name", row.father_name),
+            tr("Father Age", row.father_age),
+            tr("Father Living", row.father_living ? "Yes" : row.father_deceased ? "Deceased" : ""),
+            tr("Father Educational Attainment", row.father_educ_attain),
+            tr("Father Occupation", row.father_occupation),
+            tr("Father Employer", row.father_employer),
+            tr("Father Employer Address", row.father_employer_address),
+            tr("Mother Name", row.mother_name),
+            tr("Mother Age", row.mother_age),
+            tr("Mother Living", row.mother_living ? "Yes" : row.mother_deceased ? "Deceased" : ""),
+            tr("Mother Educational Attainment", row.mother_educ_attain),
+            tr("Mother Occupation", row.mother_occupation),
+            tr("Mother Employer", row.mother_employer),
+            tr("Mother Employer Address", row.mother_employer_address),
+            tr("Guardian Name", row.guardian_name),
+            tr("Guardian Age", row.guardian_age),
+            tr("Guardian Relation", row.guardian_relation),
+            tr("Guardian Educational Attainment", row.guardian_educ_attain),
+            tr("Guardian Occupation", row.guardian_occupation),
+            tr("Guardian Employer", row.guardian_employer),
+            tr("Guardian Employer Address", row.guardian_employer_address),
+            tr("Parents' Marital Relationship",
+              row.parents_marital_married_together ? "Married and staying together" :
+              row.parents_marital_not_married_together ? "Not Married but Living Together" :
+              row.parents_marital_single_parent ? "Single Parent" :
+              row.parents_marital_married_separated ? "Married but Separated" :
+              row.parents_marital_other ? "Other: " + (row.parents_marital_other_specify || "") : ""
+            ),
+            tr("Number of children in the family", row.num_children),
+            tr("Number of Brothers", row.num_brothers),
+            tr("Number of Sisters", row.num_sisters),
+            tr("Number of siblings employed", row.num_siblings_employed),
+            tr("Ordinal Position", row.ordinal_position),
+            tr("Sibling support",
+              (row.sibling_support_family ? "Family " : "") +
+              (row.sibling_support_studies ? "Your studies " : "") +
+              (row.sibling_support_own_family ? "His/her own family" : "")
+            ),
+            tr("Who finances your schooling",
+              (row.finances_parents ? "Parents " : "") +
+              (row.finances_spouse ? "Spouse " : "") +
+              (row.finances_relatives ? "Relatives " : "") +
+              (row.finances_brother_sister ? "Brother/Sister " : "") +
+              (row.finances_scholarship ? "Scholarship " : "") +
+              (row.finances_self_supporting ? "Self-supporting/working student" : "")
+            ),
+            tr("Parents' Total Monthly Income", row.income),
+            tr("Other Income", row.income_others),
+            tr("Do you have a quiet place to study?", row.quiet_place),
+            tr("Do you share your room with anyone?", row.share_room),
+            tr("If yes, with whom?", row.share_room_with),
+            tr("Nature of Residence", row.residence),
+          ];
+
+          // Signature row (image embedding is not supported for base64 URLs in docx.js, so just show a placeholder)
+          let signaturePara;
+          if (row.signature) {
+            signaturePara = new Paragraph({
+              children: [new TextRun({ text: "[Signature image not included in DOCX]", italics: true, size: 24 })],
+              spacing: { before: 200, after: 200 }
+            });
+          } else {
+            signaturePara = new Paragraph({
+              children: [new TextRun({ text: "Signature: —", size: 24 })],
+              spacing: { before: 200, after: 200 }
+            });
+          }
+
+          // Submitted At
+          const submittedAtPara = new Paragraph({
+            children: [new TextRun({ text: "Submitted At: " + (row.created_at ? new Date(row.created_at).toLocaleString() : "—"), size: 24 })],
+            spacing: { before: 200 }
+          });
+
+          // Build the document
           const doc = new Document({
             sections: [{
               properties: {},
-              children
+              children: [
+                ...headerParagraphs,
+                sectionHeading("I. Personal Information"),
+                new Table({ rows: personalRows, width: { size: 100, type: WidthType.PERCENTAGE } }),
+                sectionHeading("II. Educational Background"),
+                new Table({ rows: educationRows, width: { size: 100, type: WidthType.PERCENTAGE } }),
+                sectionHeading("III. Home and Family Background"),
+                new Table({ rows: familyRows, width: { size: 100, type: WidthType.PERCENTAGE } }),
+                sectionHeading("Signature"),
+                signaturePara,
+                submittedAtPara
+              ]
             }]
           });
 
@@ -840,33 +849,94 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'Student_Population_Summary_Report.docx';
+            a.download = `${studentName || 'iirf_record'}_IIRF.docx`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
           });
         }
+      };
 
-        // Try to fetch logo, fallback if error
-        fetch('PUP.png')
-          .then(res => {
-            if (!res.ok) throw new Error('Image not found');
-            return res.blob();
-          })
-          .then(blob => {
-            console.log('Logo loaded:', blob); // Add this line
-            const reader = new FileReader();
-            reader.onloadend = function () {
-              const base64Logo = reader.result.split(',')[1];
-              generateDocx(base64Logo);
-            };
-            reader.readAsDataURL(blob);
-          })
-          .catch((err) => {
-            console.error('Logo fetch error:', err);
-            generateDocx(null);
-          });
+      // Download summary report
+      function downloadSummaryReport() {
+        const summary = {
+          'First Year': 0,
+          'Second Year': 0,
+          'Third Year': 0,
+          'Fourth Year': 0
+        };
+        iirfData.forEach (row => {
+          const val = (row.course_year_section || '').toLowerCase();
+          if (/first|1st|fy|yr1|freshman/i.test(val)) summary['First Year']++;
+          else if (/second|2nd|sy|yr2|sophomore/i.test(val)) summary['Second Year']++;
+          else if (/third|3rd|ty|yr3|junior/i.test(val)) summary['Third Year']++;
+          else if (/fourth|4th|fory|yr4|senior/i.test(val)) summary['Fourth Year']++;
+        });
+
+        let doc = new Document({
+          sections: [{
+            properties: {},
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: "Student Population Summary Report", bold: true, size: 24 })
+                ],
+                alignment: AlignmentType.CENTER
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: "Individual Inventory Record Form – Administrative Report", size: 24 })
+                ],
+                alignment: AlignmentType.CENTER
+              }),
+              new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: "This section presents the summarized data on student population based on year level, as documented in the Individual Inventory Record Form. The total number of students enrolled in each year level is as follows:", size: 24 })
+                ]
+              }),
+              new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: `The total number of students in First Year is ${summary['First Year']}.`, size: 24 })
+                ]
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: `The total number of students in Second Year is ${summary['Second Year']}.`, size: 24 })
+                ]
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: `The total number of students in Third Year is ${summary['Third Year']}.`, size: 24 })
+                ]
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: `The total number of students in Fourth Year is ${summary['Fourth Year']}.`, size: 24 })
+                ]
+              }),
+              new Paragraph({ children: [new TextRun({ text: "", size: 24 })] }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: "This report provides essential information for administrative planning, resource allocation, and student support services. All figures are based on the most recent and validated Individual Inventory Record submissions.", size: 24 })
+                ]
+              })
+            ]
+          }]
+        });
+
+        Packer.toBlob(doc).then(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'Student_Population_Summary_Report.docx';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
       }
       window.downloadSummaryReport = downloadSummaryReport;
 
@@ -922,9 +992,9 @@
       function filterByYear(yearLabel) {
         // Patterns for each year (same as in renderYearSummary)
         const patterns = {
-          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A[^a-zA-Z]1[^a-zA-Z])\b/i,
-          'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A[^a-zA-Z]2[^a-zA-Z])\b/i,
-          'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A[^a-zA-Z]3[^a-zA-Z])\b/i,
+          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A|DIT1|DOMT1[^a-zA-Z]1[^a-zA-Z])\b/i,
+          'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A|DIT2|DOMT2[^a-zA-Z]2[^a-zA-Z])\b/i,
+          'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A|DIT3|DOMT3[^a-zA-Z]3[^a-zA-Z])\b/i,
           'Fourth Year': /\b(fourth|4|4th|fory|yr4|year 4|4th yr|fourth year|senior|BEED 4|BEED 4th|BEED Fourth Year|BEED 4A|BEED Fourth|BPAPFM 4|BPAPFM 4th|BPAPFM Fourth Year|BPAPFM 4A|BSOA 4|BSOA 4th|BSOA Fourth Year|BSOA 4A|BSENTREP 4|BSENTREP 4th|BSENTREP Fourth Year|BSENTREP 4A|BSAM 4|BSAM 4th|BSAM Fourth Year|BSAM 4A|[^a-zA-Z]4[^a-zA-Z])\b/i
         };
         const filtered = iirfData.filter(row => {
@@ -987,7 +1057,7 @@
       function renderYearSummary(data) {
         // Patterns for each year (case-insensitive)
         const patterns = {
-          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A[^a-zA-Z]1[^a-zA-Z])\b/i,
+          'First Year': /\b(first|1|1st|fy|yr1|year 1|1st yr|first year|freshman|BEED 1|BEED 1st|BEED First Year|BEED 1A|BEED First|BPAPFM 1|BPAPFM 1st|BPAPFM First Year|BPAPFM 1A|SOA 1|BSOA 1st|BSOA First Year|BSOA 1A|BSOA Freshman|BSENTREP 1|BSENTREP 1st|BSENTREP First Year|BSENTREP 1A|BSAM 1|BSAM 1st|BSAM First Year|BSAM 1A|DIT 1|DIT 1st|DIT First Year|DOMT 1|DOMT 1st|DOMT First Year|DOMT 1A|DIT 1A|DIT1|DOMT1[^a-zA-Z]1[^a-zA-Z])\b/i,
           'Second Year': /\b(second|2|2nd|sy|yr2|year 2|2nd yr|second year|sophomore|BEED 2|BEED 2nd|BEED Second Year|BEED 2A|BEED Second|BPAPFM 2|BPAPFM 2nd|BPAPFM Second Year|BPAPFM 2A|BSOA 2|BSOA 2nd|BSOA Second Year|BSOA 2A|BSENTREP 2|BSENTREP 2nd|BSENTREP Second Year|BSENTREP 2A|BSAM 2|BSAM 2nd|BSAM Second Year|DIT 2|DIT 2nd|DIT Second Year|DIT 2A|DOMT 2|DOMT 2nd|DOMT Second Year|DOMT 2A|BSAM 2A[^a-zA-Z]2[^a-zA-Z])\b/i,
           'Third Year': /\b(third|3|3rd|ty|yr3|year 3|3rd yr|third year|junior|BEED 3|BEED 3rd|BEED Third Year|BEED 3A|BEED Third|BPAPFM 3|BPAPFM 3rd|BPAPFM Third Year|BPAPFM 3A|BSOA 3|BSOA 3rd|BSOA Third Year|BSOA 3A|BSENTREP 3|BSENTREP 3rd|BSENTREP Third Year|BSENTREP 3A|BSAM 3|BSAM 3rd|BSAM Third Year|BSAM 3A|DIT 3|DIT 3rd|DIT Third Year|DIT 3A|DOMT 3|DOMT 3rd|DOMT Third Year|DOMT 3A[^a-zA-Z]3[^a-zA-Z])\b/i,
           'Fourth Year': /\b(fourth|4|4th|fory|yr4|year 4|4th yr|fourth year|senior|BEED 4|BEED 4th|BEED Fourth Year|BEED 4A|BEED Fourth|BPAPFM 4|BPAPFM 4th|BPAPFM Fourth Year|BPAPFM 4A|BSOA 4|BSOA 4th|BSOA Fourth Year|BSOA 4A|BSENTREP 4|BSENTREP 4th|BSENTREP Fourth Year|BSENTREP 4A|BSAM 4|BSAM 4th|BSAM Fourth Year|BSAM 4A|[^a-zA-Z]4[^a-zA-Z])\b/i
