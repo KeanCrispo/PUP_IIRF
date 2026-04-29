@@ -145,7 +145,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       // Initialize Supabase
-      const supabase = window.supabase.createClient('https://npyyaoddrquxwvkliupl.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0');
+      const supabase = window.supabase.createClient('https://yxomyajzievfcugishos.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4b215YWp6aWV2ZmN1Z2lzaG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MDE3ODYsImV4cCI6MjA5Mjk3Nzc4Nn0.L9a6QG_66T119oKlWM76OI-626efwiThkTTsc_-rOkA');
       let iirfData = [];
 
       // Fetch all IIRF form submissions
@@ -404,7 +404,7 @@ function showDetailsModal(row) {
         window.location.href = `update.html?id=${id}`;
       };
       async function logout() {
-        await supabase.auth.signOut();
+        await supabaseClient.auth.signOut();
         sessionStorage.removeItem('iirf_admin_logged_in');
         window.location.href = 'login.html';
       }
