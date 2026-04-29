@@ -10,4 +10,4 @@ app.use(express.static(__dirname));
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   open(`http://localhost:${PORT}`);
-});
+}); 
