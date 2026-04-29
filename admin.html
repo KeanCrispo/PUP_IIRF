@@ -327,8 +327,8 @@
     <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
     <script>
       // Initialize Supabase
-      const supabase = window.supabase.createClient('https://npyyaoddrquxwvkliupl.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0');
-      supabase.auth.getSession().then(({ data: { session } }) => {
+      const supabaseClient = window.supabase.createClient('https://yxomyajzievfcugishos.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4b215YWp6aWV2ZmN1Z2lzaG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MDE3ODYsImV4cCI6MjA5Mjk3Nzc4Nn0.L9a6QG_66T119oKlWM76OI-626efwiThkTTsc_-rOkA');
+      supabaseClient.auth.getSession().then(({ data: { session } }) => {
         if (!session) window.location.href = 'login.html';
       });
 
@@ -342,7 +342,7 @@
       // Fetch all IIRF form submissions
       async function fetchIIRF() {
         document.getElementById('adminTableContainer').innerHTML = '<p>Loading data...</p>';
-        const { data, error } = await supabase.from('iirf_forms').select('*').order('id', { ascending: false });
+        const { data, error } = await supabaseClient.from('iirf_forms').select('*').order('id', { ascending: false });
         if (error) {
           document.getElementById('adminTableContainer').innerHTML = '<p style="color:red;">Error loading data: ' + error.message + '</p>';
           return;
@@ -562,7 +562,7 @@
       // Delete a row
       async function deleteRow(id) {
         if (!confirm('Are you sure you want to delete this submission?')) return;
-        const { error } = await supabase.from('iirf_forms').delete().eq('id', id);
+        const { error } = await supabaseClient.from('iirf_forms').delete().eq('id', id);
         if (error) {
           alert('Error deleting: ' + error.message);
         } else {
@@ -1048,7 +1048,7 @@
         window.location.href = `update.html?id=${id}`;
       };
       async function logout() {
-        await supabase.auth.signOut();
+        await supabaseClient.auth.signOut();
         sessionStorage.removeItem('iirf_admin_logged_in');
         window.location.href = 'login.html';
       }
