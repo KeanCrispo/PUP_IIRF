@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>PUP_IIRF Admin Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="PUP.png">
   <link rel="stylesheet" href="style.css">
   <style>
     body {
@@ -135,9 +134,23 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const supabaseUrl = 'https://npyyaoddrquxwvkliupl.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5weXlhb2RkcnF1eHd2a2xpdXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTQyOTYsImV4cCI6MjA2NTI3MDI5Nn0.aBXknpBk6wq0YgFjVYfSZm2GqUacieZNq8-rny__Et0';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const supabaseUrl = 'https://yxomyajzievfcugishos.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4b215YWp6aWV2ZmN1Z2lzaG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MDE3ODYsImV4cCI6MjA5Mjk3Nzc4Nn0.L9a6QG_66T119oKlWM76OI-626efwiThkTTsc_-rOkA';
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Check if user is already authenticated and redirect to admin
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        window.location.href = 'admin.html';
+      }
+    });
+
+    // Listen for auth state changes
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        window.location.href = 'admin.html';
+      }
+    });
 
     let mode = 'login'; // login, register, forgot
 
@@ -179,7 +192,7 @@
 
       if (mode === 'login') {
         // Login with Supabase Auth
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) {
           document.getElementById('loginError').textContent = error.message || "Login failed.";
         } else {
@@ -188,7 +201,7 @@
         }
       } else if (mode === 'register') {
         // Register with Supabase Auth
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
         if (error) {
           document.getElementById('loginError').textContent = error.message || "Registration failed.";
         } else {
@@ -198,7 +211,7 @@
         }
       } else if (mode === 'forgot') {
         // Send password reset email
-        const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email);
         if (error) {
           document.getElementById('loginError').textContent = error.message || "Failed to send reset link.";
         } else {
