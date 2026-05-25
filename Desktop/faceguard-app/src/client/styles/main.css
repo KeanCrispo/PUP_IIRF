@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    background: #35424a;
+    color: #ffffff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.video-stream {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.video {
+    width: 100%;
+    max-width: 800px;
+    border: 2px solid #35424a;
+}
+
+.face-recognition-status {
+    margin-top: 20px;
+    padding: 10px;
+    background: #ffffff;
+    border: 1px solid #35424a;
+    border-radius: 5px;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px 0;
+    background: #35424a;
+    color: #ffffff;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

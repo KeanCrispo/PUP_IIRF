@@ -1,0 +1,182 @@
+SETTING THE SUPABASE LOCALY(PREPARATION FOR THE EMAIL NOTIFICATION FUNCTION)
+
+Visit this link:
+https://github.com/supabase/cli/releases/tag/v2.67.1
+
+After visiting the link, download the supabase_windows_amd64.tar.gz (28.1 MB)
+
+You will see a ZIP file in your download. you have to extract the file
+
+Now, go to the C: folder and create a folder named SupabaseCLI
+
+----------------------------------------------------------------
+TERMINAL CODES AFTER CREATING THE SupabaseCLI folder:
+
+supabase --version
+
+supabase login
+
+supabase link --project-ref xzxyxuzdgavlvkhxmxvx
+
+supabase secrets set SERVICE_ROLE_KEY=Do.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6eHl4dXpkZ2F2bHZraHhteHZ4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDE0NTI1OSwiZXhwIjoyMDc1NzIxMjU5fQ.YSK4gHXpti0f_gbwwVsmZq41VdOV2Pb0ZaGJzcXvLEw
+supabase secrets set RESEND_API_KEY=re_55cdrA7D_4CPjFAVtcjHdSGPLKuXgECvj
+
+-----------------------------------------------------------
+
+CREATING EMAIL APP
+
+Visit this link:
+
+https://myaccount.google.com/apppasswords
+
+App name: Supabase CSV Function
+
+--------------------------------------------------------------
+AFTER GETTING THE APP PASSWORD, RUN THIS INTO THE SAME TERMINAL THAT YOU HAVE USED EARLIER:
+Note that you have to replace the gmail and the password based on the one that you have created earlier
+
+supabase secrets set GMAIL_USER=johncellaban@gmail.com
+supabase secrets set GMAIL_APP_PASSWORD=meaywnizvmenjzrf
+----------------------------------------------------
+
+EDGE FUNCTION CODE 
+
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import nodemailer from "npm:nodemailer";
+import JSZip from "https://esm.sh/jszip@3.10.1";
+
+/* =======================
+   CSV HELPER
+======================= */
+function generateCSV(data: any[]) {
+  if (!data || data.length === 0) return "";
+
+  const headers = Object.keys(data[0]);
+  const rows = [
+    headers.join(","),
+    ...data.map(row =>
+      headers.map(h => `"${row[h] ?? ""}"`).join(",")
+    ),
+  ];
+
+  return rows.join("\n");
+}
+
+/* =======================
+   BASE64 → UINT8ARRAY
+======================= */
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+/* =======================
+   MAIN FUNCTION
+======================= */
+serve(async () => {
+  try {
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    /* ---------- GET ADMIN EMAIL ---------- */
+    const { data: settings, error: settingsError } = await supabase
+      .from("settings")
+      .select("admin_email")
+      .eq("id", 1)
+      .single();
+
+    if (settingsError || !settings?.admin_email) {
+      return new Response("Admin email missing", { status: 500 });
+    }
+
+    /* ---------- GET DETECTIONS ---------- */
+    const { data: detections, error: detectionsError } = await supabase
+      .from("detections")
+      .select("*");
+
+    if (detectionsError || !detections?.length) {
+      return new Response("No detections to send", { status: 200 });
+    }
+
+    /* ---------- CREATE CSV ---------- */
+    const csv = generateCSV(detections);
+
+    /* ---------- CREATE ZIP ---------- */
+    const zip = new JSZip();
+    zip.file("detections.csv", csv);
+
+    const imagesFolder = zip.folder("images");
+    let imageCount = 0;
+
+    for (const det of detections) {
+      if (!det.image) continue;
+
+      try {
+        const imageBytes = base64ToUint8Array(det.image);
+
+        const safeName = (det.name || "unknown")
+          .replace(/[^a-z0-9]/gi, "_")
+          .toLowerCase();
+
+        const filename = `${safeName}_${det.id}.jpg`;
+
+        imagesFolder?.file(filename, imageBytes);
+        imageCount++;
+      } catch (err) {
+        console.error("Base64 decode failed:", det.id, err);
+      }
+    }
+
+    if (imageCount === 0) {
+      throw new Error("No images decoded from base64");
+    }
+
+    const zipBuffer = await zip.generateAsync({
+      type: "uint8array",
+      compression: "DEFLATE",
+      compressionOptions: { level: 6 },
+    });
+
+    /* ---------- EMAIL SETUP ---------- */
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: Deno.env.get("GMAIL_USER"),
+        pass: Deno.env.get("GMAIL_APP_PASSWORD"),
+      },
+    });
+
+    /* ---------- SEND EMAIL ---------- */
+    await transporter.sendMail({
+      from: `"FaceGuard" <${Deno.env.get("GMAIL_USER")}>`,
+      to: settings.admin_email,
+      subject: "Daily Detections Backup",
+      text: "Attached is the CSV and detection images.",
+      attachments: [
+        {
+          filename: "detections_backup.zip",
+          content: zipBuffer,
+        },
+      ],
+    });
+
+    return new Response("Email sent successfully", { status: 200 });
+
+  } catch (err: any) {
+    console.error("Fatal error:", err);
+    return new Response(
+      "Failed to send email: " + err.message,
+      { status: 500 }
+    );
+  }
+});
+

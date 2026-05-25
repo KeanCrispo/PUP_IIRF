@@ -1,0 +1,15 @@
+[Unit]
+Description=Face Recognition System
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/face-recognition-system/raspberry_pi
+Environment="API_URL=https://face-recognition-system-d34lg8c82vjsu683vkqg.lp.dev"
+ExecStart=/usr/bin/python3 /home/pi/face-recognition-system/raspberry_pi/face_recognition_client.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

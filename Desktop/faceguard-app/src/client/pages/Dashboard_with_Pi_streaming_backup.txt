@@ -1,0 +1,807 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Users, UserCheck, UserX, Camera, Video, Maximize2 } from 'lucide-react'; 
+import * as faceapi from 'face-api.js';
+import { supabase } from '../supabaseClient'; 
+import { v4 as uuidv4 } from 'uuid'; 
+
+const RASPBERRY_PI_STREAM_URL = "http://192.168.1.19:8000/stream.mjpg"; 
+
+const DashboardPage: React.FC = () => {
+  const [cameraOn, setCameraOn] = useState(false);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
+  const [loadingModels, setLoadingModels] = useState(true);
+  const [facesDetected, setFacesDetected] = useState(0);
+  const [members, setMembers] = useState<any[]>([]);
+  const [raspiFrame, setRaspiFrame] = useState<string | null>(null);
+  const [memberDescriptors, setMemberDescriptors] = useState<faceapi.LabeledFaceDescriptors[]>([]);
+  const [knownDetectedToday, setKnownDetectedToday] = useState<number>(0);
+  const [unknownDetectedToday, setUnknownDetectedToday] = useState<number>(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const raspiCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Load face-api.js models
+  useEffect(() => {
+    const loadModels = async () => {
+      setLoadingModels(true);
+      console.log("Loading tinyFaceDetector...");
+      await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+      console.log("Loaded tinyFaceDetector");
+      console.log("Loading faceLandmark68Net...");
+      await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+      console.log("Loaded faceLandmark68Net");
+      console.log("Loading faceRecognitionNet...");
+      await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+      console.log("Loaded faceRecognitionNet");
+      setLoadingModels(false);
+      console.log("All models loaded");
+    };
+    loadModels();
+  }, []);
+
+  // Get available cameras
+  useEffect(() => {
+    async function getDevices() {
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.mediaDevices &&
+        typeof navigator.mediaDevices.getUserMedia === "function" &&
+        typeof navigator.mediaDevices.enumerateDevices === "function"
+      ) {
+        // Request permission first to unlock device labels
+        try {
+          await navigator.mediaDevices.getUserMedia({ video: true });
+        } catch (err) {
+          // Permission denied or no camera
+        }
+        const allDevices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = allDevices.filter(d => d.kind === 'videoinput');
+        setDevices(videoDevices);
+        if (videoDevices.length > 0 && !selectedDeviceId) {
+          setSelectedDeviceId(videoDevices[0].deviceId);
+        }
+      }
+    }
+    getDevices();
+  }, []);
+
+  // Handle camera stream
+  useEffect(() => {
+    let stream: MediaStream | null = null;
+    if (cameraOn && selectedDeviceId) {
+      if (videoRef.current) {
+        // Always reset both src and srcObject before switching
+        videoRef.current.pause();
+        videoRef.current.srcObject = null;
+        videoRef.current.src = "";
+      }
+      if (selectedDeviceId === "raspberry-pi") {
+        // Use Raspberry Pi stream
+        if (videoRef.current) {
+          videoRef.current.src = RASPBERRY_PI_STREAM_URL;
+          videoRef.current.onloadedmetadata = () => {
+            videoRef.current?.play();
+          };
+        }
+      } else if (
+        typeof navigator !== "undefined" &&
+        navigator.mediaDevices &&
+        typeof navigator.mediaDevices.getUserMedia === "function"
+      ) {
+        navigator.mediaDevices.getUserMedia({ video: { deviceId: selectedDeviceId } })
+          .then((mediaStream) => {
+            if (videoRef.current) {
+              videoRef.current.srcObject = mediaStream;
+              videoRef.current.onloadedmetadata = () => {
+                videoRef.current?.play();
+              };
+            }
+            stream = mediaStream;
+          })
+          .catch((err) => {
+            alert('Unable to access camera: ' + err.message);
+          });
+      } else {
+        alert('Camera access is not supported in this browser/environment.');
+      }
+    } else {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.srcObject = null;
+        videoRef.current.src = "";
+      }
+    }
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [cameraOn, selectedDeviceId]);
+
+  // MJPEG frame fetcher for Raspberry Pi
+  useEffect(() => {
+    let abort = false;
+    let interval: NodeJS.Timeout;
+
+    async function fetchFrame() {
+      try {
+        const res = await fetch(RASPBERRY_PI_STREAM_URL, { cache: "no-store" });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        setRaspiFrame(url);
+      } catch (err) {
+        // Handle error
+      }
+    }
+
+    if (cameraOn && selectedDeviceId === "raspberry-pi") {
+      interval = setInterval(fetchFrame, 1000); // Fetch a frame every second
+    }
+
+    return () => {
+      abort = true;
+      clearInterval(interval);
+      if (raspiFrame) URL.revokeObjectURL(raspiFrame);
+    };
+  }, [cameraOn, selectedDeviceId]);
+
+  // AI detection for Raspberry Pi frames
+  useEffect(() => {
+    async function detectRaspiFace() {
+      if (
+        cameraOn &&
+        selectedDeviceId === "raspberry-pi" &&
+        raspiFrame &&
+        !loadingModels &&
+        raspiCanvasRef.current
+      ) {
+        const img = new window.Image();
+        img.src = raspiFrame;
+        img.onload = async () => {
+          const canvas = raspiCanvasRef.current!;
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, img.width, img.height);
+
+          const detections = await faceapi.detectAllFaces(
+            canvas,
+            new faceapi.TinyFaceDetectorOptions()
+          );
+          setFacesDetected(detections.length);
+
+          ctx?.clearRect(0, 0, canvas.width, canvas.height);
+          faceapi.draw.drawDetections(canvas, detections);
+
+          // Registration logic (optional)
+          if (detections.length > 0 && !isFaceRegistered(detections)) {
+            const box = detections[0].box;
+            const faceImage = canvas.toDataURL("image/jpeg");
+            const newDetection = {
+              id: uuidv4(),
+              name: `Unknown ${Date.now()}`,
+              type: "unknown",
+              image: faceImage,
+              image_key: null,
+            };
+            await supabase.from("detections").insert([newDetection]);
+          }
+        };
+      }
+    }
+    detectRaspiFace();
+  }, [raspiFrame, cameraOn, selectedDeviceId, loadingModels]);
+
+  // Face detection and recognition loop
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (cameraOn && !loadingModels && videoRef.current) {
+      interval = setInterval(async () => {
+        const video = videoRef.current;
+        if (
+          video &&
+          video.readyState === 4 &&
+          video.videoWidth > 0 &&
+          video.videoHeight > 0
+        ) {
+          // Check if frame is mostly black
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = video.videoWidth;
+          tempCanvas.height = video.videoHeight;
+          const tempCtx = tempCanvas.getContext('2d');
+          tempCtx?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+          const frameData = tempCtx?.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
+          if (frameData) {
+            let darkPixels = 0;
+            for (let i = 0; i < frameData.length; i += 4) {
+              if (frameData[i] < 30 && frameData[i + 1] < 30 && frameData[i + 2] < 30) {
+                darkPixels++;
+              }
+            }
+            const percentDark = darkPixels / (frameData.length / 4);
+            if (percentDark > 0.95) {
+              // Skip detection if frame is mostly black
+              return;
+            }
+          }
+
+          const detectionsWithDescriptors = await faceapi
+            .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceDescriptors();
+
+          if (detectionsWithDescriptors.length > 0) {
+            if (memberDescriptors.length > 0) {
+              const matcher = new faceapi.FaceMatcher(memberDescriptors, 0.6);
+              for (const det of detectionsWithDescriptors) {
+                // Only process if detection score is high enough
+                if (det.detection.score < 0.5) continue;
+                const bestMatch = matcher.findBestMatch(det.descriptor);
+                const faceImage = captureFaceImage(video, det.detection.box);
+                if (bestMatch.label !== 'unknown') {
+                  await supabase.from("detections").insert([{
+                    id: uuidv4(),
+                    name: bestMatch.label,
+                    type: "known",
+                    image: faceImage,
+                    image_key: null,
+                    timestamp: new Date().toISOString(),
+                  }]);
+                } else {
+                  await supabase.from("detections").insert([{
+                    id: uuidv4(),
+                    name: "Unknown",
+                    type: "unknown",
+                    image: faceImage,
+                    image_key: null,
+                    timestamp: new Date().toISOString(),
+                  }]);
+                }
+              }
+            } else {
+              // No known faces, all are unknown
+              for (const det of detectionsWithDescriptors) {
+                if (det.detection.score < 0.5) continue;
+                const faceImage = captureFaceImage(video, det.detection.box);
+                await supabase.from("detections").insert([{
+                  id: uuidv4(),
+                  name: "Unknown",
+                  type: "unknown",
+                  image: faceImage,
+                  image_key: null,
+                  timestamp: new Date().toISOString(),
+                }]);
+              }
+            }
+          }
+        }
+      }, 1500);
+    }
+    return () => clearInterval(interval);
+  }, [cameraOn, loadingModels, memberDescriptors]);
+
+  // Face detection for local camera
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    async function detectLocalFace() {
+      if (
+        cameraOn &&
+        selectedDeviceId !== "raspberry-pi" &&
+        !loadingModels &&
+        videoRef.current &&
+        canvasRef.current
+      ) {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const detections = await faceapi.detectAllFaces(
+          video,
+          new faceapi.TinyFaceDetectorOptions()
+        );
+        setFacesDetected(detections.length);
+
+        const ctx = canvas.getContext("2d");
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        faceapi.draw.drawDetections(canvas, detections);
+      }
+    }
+
+    if (cameraOn && selectedDeviceId !== "raspberry-pi" && !loadingModels) {
+      interval = setInterval(detectLocalFace, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [cameraOn, selectedDeviceId, loadingModels]);
+
+  // Fullscreen handler
+  const handleFullscreen = () => {
+    if (videoRef.current) {
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen();
+      } else if ((videoRef.current as any).webkitRequestFullscreen) {
+        (videoRef.current as any).webkitRequestFullscreen();
+      } else if ((videoRef.current as any).msRequestFullscreen) {
+        (videoRef.current as any).msRequestFullscreen();
+      }
+    }
+  };
+
+  // Fetch members from Supabase
+  useEffect(() => {
+    async function fetchMembers() {
+      const { data, error } = await supabase
+        .from('members')
+        .select('*')
+        .order('date_added', { ascending: false });
+      if (!error && data) setMembers(data);
+    }
+    fetchMembers();
+  }, []);
+
+  // Load member face descriptors after members are fetched
+  useEffect(() => {
+    async function loadDescriptors() {
+      if (!loadingModels && members.length > 0) {
+        const descriptors: faceapi.LabeledFaceDescriptors[] = [];
+        for (const member of members) {
+          // Use all face images if available
+          let images: string[] = [];
+          if (member.face_images) {
+            try {
+              images = JSON.parse(member.face_images);
+            } catch {
+              images = [];
+            }
+          }
+          // Fallback to profile_image if no face_images
+          if (images.length === 0 && member.profile_image) {
+            images = [member.profile_image];
+          }
+          const faceDescriptors: Float32Array[] = [];
+          for (const imgUrl of images) {
+            try {
+              const img = await faceapi.fetchImage(imgUrl);
+              const detection = await faceapi
+                .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+                .withFaceLandmarks()
+                .withFaceDescriptor();
+              if (detection && detection.descriptor) {
+                faceDescriptors.push(detection.descriptor);
+              }
+            } catch (err) {
+              console.warn('Error loading image for member:', member.name, imgUrl, err);
+            }
+          }
+          if (faceDescriptors.length > 0) {
+            descriptors.push(
+              new faceapi.LabeledFaceDescriptors(
+                member.name || member.id,
+                faceDescriptors
+              )
+            );
+          }
+        }
+        setMemberDescriptors(descriptors);
+        console.log('Total descriptors loaded:', descriptors.length);
+      }
+    }
+    loadDescriptors();
+  }, [members, loadingModels]);
+
+  // Helper: Get today's date string in YYYY-MM-DD format
+  const getTodayString = () => {
+    const now = new Date();
+    return now.toISOString().slice(0, 10);
+  };
+
+  // Fetch today's detection stats from Supabase
+  const fetchTodayDetections = async () => {
+    const today = getTodayString();
+    const { data, error } = await supabase
+      .from('detections')
+      .select('name, type, image, timestamp')
+      .gte('timestamp', today + 'T00:00:00')
+      .lte('timestamp', today + 'T23:59:59');
+    if (!error && data) {
+      // Unique known names
+      const knownSet = new Set<string>();
+      // Unique unknown images (base64 string)
+      const unknownSet = new Set<string>();
+      data.forEach((row: any) => {
+        if (row.type === 'known') {
+          knownSet.add(row.name);
+        } else if (row.type === 'unknown') {
+          unknownSet.add(row.image); // assumes image is unique per unknown
+        }
+      });
+      setKnownDetectedToday(knownSet.size);
+      setUnknownDetectedToday(unknownSet.size);
+    }
+  };
+
+  // Poll today's detections every 5 seconds
+  useEffect(() => {
+    fetchTodayDetections();
+    const interval = setInterval(fetchTodayDetections, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div style={{ padding: '24px', background: '#f5f6fa', minHeight: '100vh' }}>
+      <div style={{ display: 'flex', gap: '24px', marginBottom: '32px' }}>
+        <SummaryCard
+          icon={
+            <div
+              style={{
+                background: '#e3f0ff',
+                borderRadius: '12px',
+                width: '56px',
+                height: '56px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Users size={32} color="#2563eb" />
+            </div>
+          }
+          value={members.length} // <-- show actual count
+          label="Total Members"
+          bg="#e3f0ff"
+          color="#2563eb"
+        />
+        <SummaryCard
+          icon={
+            <div
+              style={{
+                background: '#eafaf1',
+                borderRadius: '12px',
+                width: '56px',
+                height: '56px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <UserCheck size={32} color="#22c55e" />
+            </div>
+          }
+          value={knownDetectedToday}
+          label="Known Detected Today"
+          bg="#eafaf1"
+          color="#22c55e"
+        />
+        <SummaryCard
+          icon={
+            <div
+              style={{
+                background: '#fdeaea',
+                borderRadius: '12px',
+                width: '56px',
+                height: '56px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <UserX size={32} color="#ef4444" />
+            </div>
+          }
+          value={unknownDetectedToday}
+          label="Unknown Detected Today"
+          bg="#fdeaea"
+          color="#ef4444"
+        />
+      </div>
+
+      <div
+        style={{
+          background: '#fff',
+          borderRadius: '16px',
+          padding: '24px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+          marginBottom: '24px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px',
+          }}
+        >
+          <span style={{ fontWeight: 600, fontSize: '18px' }}>
+            Live Camera Feed {cameraOn && !loadingModels && `- Faces: ${facesDetected}`}
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <select
+              value={selectedDeviceId}
+              onChange={e => setSelectedDeviceId(e.target.value)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: '1px solid #e5e7eb',
+                fontWeight: 500,
+                background: '#f3f4f6',
+                marginRight: '8px'
+              }}
+              disabled={devices.length === 0 && !selectedDeviceId}
+            >
+              <option value="raspberry-pi">Raspberry Pi Stream</option>
+              {devices.map(device => (
+                <option key={device.deviceId} value={device.deviceId}>
+                  {device.label || `Camera ${device.deviceId}`}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => setCameraOn((prev) => !prev)}
+              style={{
+                background: cameraOn ? '#ef4444' : '#222',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px 16px',
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+              }}
+            >
+              {cameraOn ? <Video size={20} /> : <Camera size={20} />}
+              {cameraOn ? 'Turn Off' : 'Turn On'}
+            </button>
+            <button
+              onClick={handleFullscreen}
+              style={{
+                background: '#2563eb',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+              }}
+              title="Full Screen"
+            >
+              <Maximize2 size={20} />
+            </button>
+          </div>
+        </div>
+        <div
+          style={{
+            background: '#f3f4f6',
+            borderRadius: '16px',
+            height: '320px',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            position: 'relative'
+          }}
+        >
+          {!cameraOn ? (
+            <>
+              <svg
+                width="64"
+                height="64"
+                fill="none"
+                viewBox="0 0 24 24"
+                style={{ marginBottom: '12px', opacity: 0.5 }}
+              >
+                <path
+                  stroke="#6b7280"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-3.382a2 2 0 01-1.447-.724l-.894-1.053A2 2 0 0011.382 3H7a2 2 0 00-2 2z"
+                />
+                <line
+                  x1="4"
+                  y1="4"
+                  x2="20"
+                  y2="20"
+                  stroke="#6b7280"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span style={{ color: '#6b7280', fontSize: '18px' }}>Camera is OFF</span>
+            </>
+          ) : selectedDeviceId === "raspberry-pi" ? (
+            <>
+              <img
+                src={raspiFrame || RASPBERRY_PI_STREAM_URL}
+                alt="Raspberry Pi Stream"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  borderRadius: '16px',
+                  background: '#000',
+                }}
+              />
+              <canvas
+                ref={raspiCanvasRef}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  pointerEvents: 'none',
+                  borderRadius: '16px',
+                }}
+              />
+              {loadingModels && (
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  background: 'rgba(255,255,255,0.8)',
+                  padding: '16px 32px',
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  color: '#2563eb',
+                  fontSize: '18px'
+                }}>
+                  Loading AI models...
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <video
+                ref={videoRef}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain', 
+                  borderRadius: '16px',
+                  background: '#000',
+                }}
+                autoPlay
+                muted
+              />
+              <canvas
+                ref={canvasRef}
+                width={videoRef.current?.videoWidth || 640}
+                height={videoRef.current?.videoHeight || 320}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  pointerEvents: 'none',
+                  borderRadius: '16px',
+                }}
+              />
+              {loadingModels && (
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  background: 'rgba(255,255,255,0.8)',
+                  padding: '16px 32px',
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  color: '#2563eb',
+                  fontSize: '18px'
+                }}>
+                  Loading AI models...
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SummaryCard = ({
+  icon,
+  value,
+  label,
+  bg,
+  color,
+}: {
+  icon: React.ReactNode;
+  value: number;
+  label: string;
+  bg: string;
+  color: string;
+}) => (
+  <div
+    style={{
+      flex: 1,
+      background: '#fff',
+      borderRadius: '16px',
+      padding: '24px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+      fontFamily: 'Inter, sans-serif',
+      transition: 'box-shadow 0.2s, transform 0.2s',
+      cursor: 'pointer',
+    }}
+    onMouseEnter={e => {
+      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(37,99,235,0.12)';
+      (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px) scale(1.03)';
+    }}
+    onMouseLeave={e => {
+      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
+      (e.currentTarget as HTMLDivElement).style.transform = 'none';
+    }}
+  >
+    <div
+      style={{
+        background: bg,
+        borderRadius: '12px',
+        width: '56px',
+        height: '56px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      {icon}
+    </div>
+    <div>
+      <div style={{ fontSize: '28px', fontWeight: 700, color }}>{value}</div>
+      <div style={{ fontSize: '16px', color: '#6b7280', fontWeight: 500 }}>
+        {label}
+      </div>
+    </div>
+  </div>
+);
+
+// Helper: Capture face image from video
+const captureFaceImage = (video: HTMLVideoElement, box: faceapi.Box) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = box.width;
+  canvas.height = box.height;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.drawImage(
+      video,
+      box.left,
+      box.top,
+      box.width,
+      box.height,
+      0,
+      0,
+      box.width,
+      box.height
+    );
+    return canvas.toDataURL('image/jpeg');
+  }
+  return '';
+};
+
+// Helper: Check if face is already registered (simple demo: always register)
+const isFaceRegistered = (detections: faceapi.FaceDetection[]) => {
+  // For demo, always return false (always register)
+  // In production, use face recognition and compare with existing members
+  return false;
+};
+
+export default DashboardPage;

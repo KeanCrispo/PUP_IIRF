@@ -1,0 +1,152 @@
+Excellent choice ✅ — Option 1 (Node.js + face-api.js on Raspberry Pi) is the best way to make your Pi process images with the exact same models your website uses.
+
+Let’s set it up cleanly.
+
+⚙️ 1. Install prerequisites on your Raspberry Pi
+sudo apt update
+sudo apt install -y nodejs npm
+mkdir ~/faceguard-pi && cd ~/faceguard-pi
+npm init -y
+npm install @vladmandic/face-api @vladmandic/canvas node-fetch supabase @supabase/supabase-js
+npm install --save-dev typescript
+
+
+@vladmandic/face-api is the Node-compatible version of the face-api.js library you already use in the browser.
+
+If you want to capture camera frames directly:
+
+sudo apt install -y ffmpeg v4l-utils
+npm install node-webcam
+
+📁 2. Copy (or access) your models folder
+
+You have them at:
+
+C:\Users\keanc\Desktop\faceguard-app\public\models
+
+
+Upload them to your web app or make sure they’re accessible at:
+
+http://<your-web-server-ip>:<port>/models/
+
+
+If you’re running React locally on your PC:
+
+Start your React app with npm start
+
+From the Pi, confirm that
+http://<your-PC-ip>:3000/models/face_recognition_model-weights_manifest.json loads.
+
+🧠 3. Create the AI processing script on the Pi
+
+Save this as faceguard_pi.js inside ~/faceguard-pi/
+
+import * as faceapi from '@vladmandic/face-api';
+import * as canvas from '@vladmandic/canvas';
+import fetch from 'node-fetch';
+import { createClient } from '@supabase/supabase-js';
+import NodeWebcam from 'node-webcam';
+import fs from 'fs';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+
+// 🪣 Supabase
+const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_KEY = 'YOUR_SUPABASE_KEY';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// 📦 face-api.js environment setup
+const { Canvas, Image, ImageData } = canvas;
+faceapi.env.monkeyPatch({ Canvas, Image, ImageData, fetch });
+
+// 🌐 path to models (served by your web app)
+const MODEL_URL = 'http://<your-pc-ip>:3000/models';
+
+async function loadModels() {
+  console.log('[INFO] Loading models...');
+  await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+  await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+  await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+  await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
+  console.log('[INFO] Models loaded.');
+}
+
+// 🎥 capture a frame from Pi camera
+const webcam = NodeWebcam.create({
+  width: 640,
+  height: 480,
+  device: false,
+  callbackReturn: 'location',
+  output: 'jpeg',
+});
+
+async function analyzeFrame() {
+  return new Promise((resolve, reject) => {
+    const file = `capture_${Date.now()}.jpg`;
+    webcam.capture(file, async (err, data) => {
+      if (err) return reject(err);
+      const img = await canvas.loadImage(file);
+      const detections = await faceapi
+        .detectAllFaces(img, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceDescriptors()
+        .withAgeAndGender();
+
+      if (detections.length > 0) {
+        console.log(`[AI] ${detections.length} face(s) detected`);
+        // Save photo and metadata to Supabase
+        const buffer = fs.readFileSync(file);
+        const fileName = `detections/${uuidv4()}.jpg`;
+        const { error: uploadError } = await supabase.storage
+          .from('detections')
+          .upload(fileName, buffer, { contentType: 'image/jpeg' });
+        if (!uploadError) {
+          const imageURL = `${SUPABASE_URL}/storage/v1/object/public/detections/${fileName}`;
+          await supabase.from('detections').insert({
+            id: uuidv4(),
+            name: 'Unknown',
+            type: 'detected',
+            image: imageURL,
+            timestamp: new Date().toISOString(),
+          });
+          console.log('[UPLOAD] Detection saved to Supabase');
+        }
+      }
+      fs.unlinkSync(file); // delete temp frame
+      resolve();
+    });
+  });
+}
+
+(async () => {
+  await loadModels();
+  console.log('[START] Running face detection every 5 seconds...');
+  setInterval(analyzeFrame, 5000);
+})();
+
+🔑 4. Run it
+node faceguard_pi.js
+
+
+It will:
+
+Load your models directly from your hosted React app’s /models/ folder.
+
+Capture an image from the Pi camera every 5 seconds.
+
+Run the same face-api.js model inference as your dashboard.
+
+Upload detected frames + metadata to your Supabase detections table.
+
+✅ Result
+
+You now have:
+
+Same AI logic and model weights as your dashboard page
+
+Automatic Supabase logging of detections
+
+Live stream still available at http://<pi-ip>:8000/stream.mjpg if you keep your streaming service running separately
+
+Would you like me to integrate this Node.js AI processing into your existing Python stream server, so both run together (stream + AI in one)?
+Or do you prefer them as separate processes (Python for stream, Node for AI)?

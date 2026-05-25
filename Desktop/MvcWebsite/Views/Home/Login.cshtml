@@ -1,0 +1,89 @@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    body { background: #f5f5f5; }
+    .yt-login-outer {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+    }
+    .yt-card {
+        width: 100%;
+        max-width: 420px;
+        background: #fff;
+        border-radius: .5rem;
+        box-shadow: 0 6px 24px rgba(16,24,40,.08);
+        padding: 2rem;
+    }
+    .yt-brand {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        margin-bottom: 1.2rem;
+    }
+    .yt-play {
+        width: 34px;
+        height: 24px;
+        display: inline-block;
+        background: #ff0000;
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
+        border-radius: 3px;
+    }
+    .yt-title { font-weight: 700; font-size: 1.25rem; color: #111827; }
+    .yt-sub { color: #6b7280; margin-bottom: 1.2rem; font-size: .95rem; }
+    .form-label { font-weight: 600; font-size: .95rem; margin-bottom: .35rem; }
+    .yt-footer { text-align: center; margin-top: 1.25rem; color: #6b7280; font-size: .9rem; }
+    .yt-links { display:flex; justify-content:space-between; margin-top:.5rem; font-size:.9rem; }
+    .divider-or { text-align:center; margin: .9rem 0; color:#9ca3af; font-size:.85rem; }
+    .create-account { display:flex; justify-content:center; gap:.5rem; margin-top:.75rem; }
+    .small-muted { color:#6b7280; font-size:.9rem; }
+</style>
+
+<div class="yt-login-outer">
+    <div class="yt-card">
+        <div class="yt-brand">
+            <span class="yt-play" aria-hidden="true"></span>
+            <div class="yt-title">YouTube</div>
+        </div>
+
+        <h4 class="mb-1">Sign in</h4>
+        <div class="yt-sub">to continue to YouTube</div>
+
+        <form method="post" action="/Home/Login">
+            <div class="mb-3">
+                <label class="form-label" for="email">Email or phone</label>
+                <input id="email" name="email" type="email" class="form-control" placeholder="you@example.com" required />
+            </div>
+
+            <div class="d-grid mb-2">
+                <button type="submit" class="btn btn-primary">Next</button>
+            </div>
+
+            <div class="yt-links">
+                <a href="#" class="small-muted">Forgot email?</a>
+                <a href="#" class="small-muted">Help</a>
+            </div>
+
+            <div class="divider-or">or</div>
+
+            <div class="d-grid">
+                <button type="button" class="btn btn-outline-secondary">
+                    <img src="~/images/google-icon.png" alt="" style="width:18px;height:18px;margin-right:.5rem;vertical-align:middle" /> Sign in with Google
+                </button>
+            </div>
+
+            <div class="create-account">
+                <span class="small-muted">Don't have an account?</span>
+                <a href="/Home/Register">Create account</a>
+            </div>
+        </form>
+
+        <div class="yt-footer">
+            <div class="small-muted">One account. All of Google working for you.</div>
+        </div>
+    </div>
+</div>

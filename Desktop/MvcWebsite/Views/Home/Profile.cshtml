@@ -1,0 +1,116 @@
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<style>
+    .yt-banner {
+        height: 220px;
+        background: linear-gradient(90deg,#1e3a8a,#0ea5a6);
+        position: relative;
+        border-radius: .25rem;
+        overflow: visible;
+        margin-bottom: 80px;
+    }
+    .yt-avatar {
+        width: 128px;
+        height: 128px;
+        border-radius: 50%;
+        background: #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 42px;
+        color: #444;
+        border: 4px solid white;
+        position: absolute;
+        bottom: -64px;
+        left: 24px;
+        box-shadow: 0 6px 18px rgba(0,0,0,.2);
+    }
+    .channel-header {
+        margin-top: 84px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .channel-info {
+        margin-left: 168px;
+        color: #e0e0e0; /* Light text */
+    }
+    .sub-btn {
+        background: #cc0000;
+        color: white;
+        font-weight: 600;
+        border-radius: 2rem;
+        padding: .55rem 1.1rem;
+        border: none;
+    }
+    .channel-stats { color: #6b7280; font-size: .95rem; }
+    .channel-tabs .nav-link { color: #374151; font-weight:600; }
+    .video-card img {
+        width:100%;
+        height:180px;
+        object-fit:cover;
+        border-radius:.25rem; /* Keep existing styles */
+    }
+</style>
+
+<div class="container">
+    <div class="yt-banner mb-5">
+        <!-- optional banner image could be set via inline style or background-image here -->
+        <div class="yt-avatar">K</div>
+    </div>
+
+    <div class="channel-header">
+        <div class="channel-info">
+            <h2 class="mb-0">Kean Crispo</h2>
+            <div class="channel-stats">100M subscribers • 152 videos</div>
+            <p class="text-muted mt-2">Creator • Tech, Tutorials, Projects</p>
+        </div>
+
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <button class="sub-btn">Subscribe</button>
+            <button class="btn btn-outline-secondary">Subscribe 100M</button>
+        </div>
+    </div>
+
+    <nav class="channel-tabs mt-4">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Videos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Playlists</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Channels</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="mt-4">
+        <h5 class="mb-3">Latest uploads</h5>
+        <div class="row g-3">
+            @for (int i = 1; i < 7; i++)
+            {
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="card video-card">
+                        <img src="~/images/thumbnails/thumbnail-@(i).jpg" alt="Thumbnail @(i)">
+                        <div class="card-body p-2">
+                            <h6 class="mb-1">Bidyo @(i)</h6>
+                            <div class="text-muted" style="font-size:.85rem;">100K views • 2 hours</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
